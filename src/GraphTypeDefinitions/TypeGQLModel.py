@@ -2,11 +2,11 @@ import uuid
 import typing
 import strawberry
 
-TypeGQLModel = typing.Annotated["TypeGQLModel", strawberry.lazy(".TypeGQLModel")]
+FieldGQLModel = typing.Annotated["FieldGQLModel", strawberry.lazy(".FieldGQLModel")]
 ArgGQLModel = typing.Annotated["ArgGQLModel", strawberry.lazy(".ArgGQLModel")]
 
 @strawberry.type(description="GQL field type definition")
-class FieldGQLModel:
+class TypeGQLModel:
     def __init__(self, datadict: dict):
         self.data = datadict
 
@@ -31,13 +31,11 @@ class FieldGQLModel:
         return self.data.get("deprecation_reason", None)
 
     @strawberry.field(description="type")    
-    def type(self) -> typing.Optional["TypeGQLModel"]:
-        return self.data.get("type", None)
+    def kind(self) -> typing.Optional[str]:
+        return self.data.get("kind", None)  
+
+    @strawberry.field(description="type")    
+    def of_type(self) -> typing.Optional["TypeGQLModel"]:
+        return self.data.get("of_type", None)
     
-    def default_value(self) -> typing.Optional["TypeGQLModel"]:
-        return self.get("default_value", None)
-
-
-
-@strawberry.type(description="all fields")
-async def field_page(self) -> typing.List["FieldGQLModel"]:
+    pass

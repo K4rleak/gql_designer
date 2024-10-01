@@ -3,10 +3,12 @@ import typing
 import strawberry
 
 TypeGQLModel = typing.Annotated["TypeGQLModel", strawberry.lazy(".TypeGQLModel")]
+FieldGQLModel = typing.Annotated["FieldGQLModel", strawberry.lazy(".FieldGQLModel")]
 ArgGQLModel = typing.Annotated["ArgGQLModel", strawberry.lazy(".ArgGQLModel")]
 
-@strawberry.type(description="GQL field type definition")
-class FieldGQLModel:
+@strawberry.type(description="GQL argument definition")
+class ArgGQLModel:
+
     def __init__(self, datadict: dict):
         self.data = datadict
 
@@ -34,10 +36,6 @@ class FieldGQLModel:
     def type(self) -> typing.Optional["TypeGQLModel"]:
         return self.data.get("type", None)
     
-    def default_value(self) -> typing.Optional["TypeGQLModel"]:
-        return self.get("default_value", None)
+    
 
-
-
-@strawberry.type(description="all fields")
-async def field_page(self) -> typing.List["FieldGQLModel"]:
+    pass
