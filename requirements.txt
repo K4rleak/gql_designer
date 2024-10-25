@@ -5,6 +5,7 @@ gunicorn
 
 aiohttp
 requests
+asyncpg
 
 sqlalchemy
 sqlalchemy_utils
