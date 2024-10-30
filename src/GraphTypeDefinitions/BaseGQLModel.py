@@ -44,13 +44,13 @@ class BaseGQLModel(Node):
     def __repr__(self):
         return f"{type(self).__name__}({self._data.id})"
     
-    from ._GraphResolvers import (
-        resolve_id as id,
-        resolve_createdby as createdby,
-        resolve_created as created,
-        resolve_lastchange as lastchange,
-        resolve_changedby as changedby
-    )
+    # from ._GraphResolvers import (
+    #     resolve_id as id,
+    #     resolve_createdby as createdby,
+    #     resolve_created as created,
+    #     resolve_lastchange as lastchange,
+    #     resolve_changedby as changedby
+    # )
 
 
     # @classmethod

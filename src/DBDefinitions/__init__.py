@@ -3,8 +3,9 @@ import sqlalchemy
         
 from .Base import BaseModel
 from .GQLTypeModel import GQLTypeModel
+from .GQLInterfacesModel import GQLInterfaceModel
 from .UUID import UUIDColumn
-
+from .type_interface_association import GQLTypeInterfaceRelationModel
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
