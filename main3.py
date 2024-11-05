@@ -116,7 +116,8 @@ graphql_app = GraphQLRouter(schema, context_getter=get_context)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Load the ML model
-    await startEngine(makeDrop=True)
+    asyncsessionmaker = await startEngine(makeDrop=True)
+    #asyncio.create_task(initDB(result))
     yield
 
 

@@ -1,4 +1,5 @@
 import typing
+import asyncio
 from typing import List, Union, Optional
 import strawberry
 import strawberry.types
@@ -53,6 +54,9 @@ from .mutation import Mutation
 
 @strawberry.type(name="My__InputValue")
 class InputGQL:
+    # @classmethod
+    # def getloader(cls,info: strawberry.types.Info):
+    #     loader = getLoadersFromInfo(info=info).
     @strawberry.field(description="")
     def name(self, info: strawberry.types.Info) -> str:
         return ""
@@ -89,21 +93,38 @@ class EnumGQL:
 
 @strawberry.type(name="My__Field")
 class FieldGQL:
+    @classmethod
+    def getLoader(cls, info): 
+        return getLoadersFromInfo(info).GQLFieldModel
+    @classmethod
+    async def resolve_reference(cls,info: strawberry.types.Info,id:uuid.UUID):
+        #pozor jestli je id typu uuid nebo str
+        loader=cls.getLoader(info)
+        instance=await loader.load(id)
+        instance.__strawberry_definition__=cls.__strawberry_definition__
+        return instance
+    
     @strawberry.field(description="")
     def name(self, info: strawberry.types.Info) -> str:
         return ""
     
-    @strawberry.field(description="")
+    @strawberry.field(description="blabla")
     def description(self, info: strawberry.types.Info) -> str:
         return "description"
     
+    @strawberry.field(description="blabla")
+    async def master_type(self, info: strawberry.types.Info) -> typing.Optional["TypeGQL"]:
+        result = await TypeGQL.resolve_reference(info=info,id=self.master_type_id)
+        return result
+
     @strawberry.field(description="")
     def args(self, info: strawberry.types.Info) -> typing.List["InputGQL"]:
         return []
     
-    @strawberry.field(description="")
-    def type(self, info: strawberry.types.Info) -> "TypeGQL":
-        return None
+    @strawberry.field(description="type of this field")
+    async def type(self, info: strawberry.types.Info) -> typing.Optional["TypeGQL"]:
+        result = await TypeGQL.resolve_reference(info=info,id=self.typeof_id)
+        return result
     
     @strawberry.field(description="")
     def is_deprecated(self, info: strawberry.types.Info) -> bool:
@@ -180,25 +201,48 @@ class TypeGQL:
         return getLoadersFromInfo(info).GQLTypeModel
     data: strawberry.Private[object]
 
+    @classmethod
+    async def resolve_reference(cls,info: strawberry.types.Info,id:uuid.UUID):
+        #pozor jestli je id typu uuid nebo str
+        loader=cls.getLoader(info)
+        instance=await loader.load(id)
+        instance.__strawberry_definition__=cls.__strawberry_definition__
+        return instance
+
+
     # @strawberry.field(description="")
     @alchemyfield(description="")
     def kind(self, info: strawberry.types.Info) -> "TypeKindGQL":
-        return None
+        return self.kind
     
     @strawberry.field(description="")
     def name(self, info: strawberry.types.Info) -> str:
-        return ""
+        return self.name
     
     @strawberry.field(description="")
     def description(self, info: strawberry.types.Info) -> str:
-        return "description"
+        return self.description
     
     @strawberry.field(description="")
-    def fields(self, info: strawberry.types.Info, include_deprecated: bool = True) -> typing.List["FieldGQL"]:
-        return []
+    def is_deprecated(self, info: strawberry.types.Info) -> bool:
+        return self.isDeprecated
+    
+    @strawberry.field(description="")
+    def deprecation_reason(self, info: strawberry.types.Info) -> str:
+        return self.deprecationReason
+
+    @strawberry.field(description="")
+    async def fields(self, info: strawberry.types.Info, include_deprecated: bool = True) -> typing.List["FieldGQL"]:
+        id = self.id
+        loader = FieldGQL.getLoader(info=info)
+        rows = await loader.filter_by(master_type_id=id)
+        futures=(FieldGQL.resolve_reference(info=info,id=row.id)for row in rows)
+        results=await asyncio.gather(*futures)
+        return results
     
     @strawberry.field(description="")
     def interfaces(self, info: strawberry.types.Info) -> typing.List["TypeGQL"]:
+        raise NotImplementedError("This method is not implemented yet.")
         return []
     
     @strawberry.field(description="")
@@ -215,7 +259,7 @@ class TypeGQL:
     
     @strawberry.field(description="")
     def of_type(self, info: strawberry.types.Info) -> "InputGQL":
-        return None
+        return self.typeof_id
     
     pass
 

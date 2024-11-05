@@ -16,7 +16,15 @@ class GQLFieldModel(BaseModel):
 
     __tablename__ = "fields"
 
+
     name = Column(String, comment="name of the group")
-    typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
+    description = Column(String, comment="description of the group")
+    isDeprecated = Column(Boolean, comment="if it is depreacted", default=False)
+    deprecationReason = Column(String, comment="the reason why it is deprecated", nullable=True)
+    master_type_id = Column(ForeignKey('types.id'), index=True, comment="type which owns this field")
+
+
+    typeof_id = Column(ForeignKey("types.id"), index=True, comment="type of this field")
+    #co to je za typ fieldu
    
     typeof = relationship("GQLTypeModel", viewonly=True)

@@ -24,6 +24,5 @@ class GQLTypeModel(BaseModel):
     typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
     typeof = relationship("GQLTypeModel", viewonly=True)
 
-    #kind = Column(String, comment="kind of the type aka SCALAR, OBJECT, NON_NULL")
-    kind = Column(ForeignKey("types.id"), index=True, comment="kind")
-    interfaces = Column(ForeignKey("types.id"), index=True, comment="kind")
+    kind = Column(String, comment="kind of the type aka SCALAR, OBJECT, NON_NULL")
+    #kind = Column(ForeignKey("types.id"), index=True, comment="kind")
