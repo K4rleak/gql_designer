@@ -10,16 +10,17 @@ for t in types:
     break
 
 import typing
+import os
 import strawberry
 import uuid
 import src.DBFeeder as DBFeeder
 import asyncio
 from enum import Enum
 from src.Dataloaders import getLoadersFromInfo, getUserFromInfo
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from strawberry.fastapi import GraphQLRouter
 from contextlib import asynccontextmanager
-from src.DBDefinitions import startEngine
+from src.DBDefinitions import startEngine,ComposeConnectionString
 from src.GraphTypeDefinitions import schema
 
 
@@ -109,25 +110,64 @@ query = """
 # introspectionresult = schema.execute_sync(query=query, root_value=root_value)
 # print(introspectionresult.data)
 
-async def get_context():
-    return {#volat zde funkci je to v gql publ
-    }
+connectionString = ComposeConnectionString()
 
-graphql_app = GraphQLRouter(schema, context_getter=get_context)
+def singleCall(asyncFunc):
+    """Dekorator, ktery dovoli, aby dekorovana funkce byla volana (vycislena) jen jednou. Navratova hodnota je zapamatovana a pri dalsich volanich vracena.
+    Dekorovana funkce je asynchronni.
+    """
+    resultCache = {}
+
+    async def result():
+        if resultCache.get("result", None) is None:
+            resultCache["result"] = await asyncFunc()
+        return resultCache["result"]
+
+    return result
+
+
+@singleCall
+async def RunOnceAndReturnSessionMaker():
+    """Provadi inicializaci asynchronniho db engine, inicializaci databaze a vraci asynchronni SessionMaker.
+    Protoze je dekorovana, volani teto funkce se provede jen jednou a vystup se zapamatuje a vraci se pri dalsich volanich.
+    """
+
+    # makeDrop = os.getenv("DEMO", None) == "True"
+    makeDrop=True
+    # logging.info(f'starting engine for "{connectionString} makeDrop={makeDrop}"')
+
+    initizalizedEngine = await startEngine(
+        connectionstring=connectionString, makeDrop=makeDrop, makeUp=True
+    )   
+    
+    async def initDBWithReport(initizalizedEngine):
+        from src.DBFeeder import initDB    
+        await initDB(initizalizedEngine)
+        print("data initialized", flush=True)
+    
+    future = initDBWithReport(initizalizedEngine)
+    asyncio.create_task(future)
+    return initizalizedEngine
+
+
+
+async def get_context(request: Request):
+    asyncSessionMaker = await RunOnceAndReturnSessionMaker()
+        
+    from src.Dataloaders import createLoadersContext
+    context = createLoadersContext(asyncSessionMaker)
+    result = {**context}
+    result["request"] = request
+    return result
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Load the ML model
-    asyncsessionmaker = await startEngine(makeDrop=True)
-    future=DBFeeder.initDB(asyncsessionmaker)
-    asyncio.create_task(future)
-    #asyncio.create_task(initDB(result))
+    initizalizedEngine = await RunOnceAndReturnSessionMaker()  
     yield
 
 
-
-
-
 app = FastAPI(lifespan=lifespan)
+graphql_app = GraphQLRouter(schema, context_getter=get_context)
 
 app.include_router(graphql_app, prefix="/graphql")

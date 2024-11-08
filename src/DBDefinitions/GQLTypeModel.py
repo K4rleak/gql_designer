@@ -18,7 +18,7 @@ class GQLTypeModel(BaseModel):
 
     name = Column(String, comment="name of the type")
     description = Column(String, comment="description of the type")
-    isDeprecated = Column(Boolean, comment="if it is depreacted", default=False)
+    is_deprecated = Column(Boolean, comment="if it is depreacted", default=False)
     deprecationReason = Column(String, comment="the reason why it is deprecated", nullable=True)
 
     typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")

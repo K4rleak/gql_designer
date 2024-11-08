@@ -1,0 +1,30 @@
+{
+    "types": [
+        {   
+            "id":"0192fc1c-9bbe-70e5-ac74-be3cdd19b4ab",
+            "name": "Muj_typ",
+            "kind": "OBJECT",
+            "description": "popis1",
+            "deprecationReason":"Je zastaraly",
+            "is_deprecated": false
+        },
+        {
+            "id":"0192fc1e-14ce-7c1f-9d50-1b156b4c5e7d",
+            "name": "Muj_typ2",
+            "kind": "OBJECT",
+            "description": "popis2",
+            "is_deprecated": true
+        }
+    ],
+    "fields": [
+        {   
+            "id":"0192fc26-4943-756a-a16e-0489ffe7171f",
+            "name":"Moje_polozka",
+            "master_type_id":"0192fc1c-9bbe-70e5-ac74-be3cdd19b4ab",
+            "typeof_id":"0192fc1e-14ce-7c1f-9d50-1b156b4c5e7d",
+            "description":"Polozka popis1",
+            "is_deprecated": true,
+            "deprecationReason":"Je zastaraly"
+        }
+    ]
+}

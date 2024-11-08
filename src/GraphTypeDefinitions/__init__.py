@@ -53,7 +53,7 @@ from .mutation import Mutation
 
 
 @strawberry.type(name="My__InputValue")
-class InputGQL:
+class ArgGQL:
     # @classmethod
     # def getloader(cls,info: strawberry.types.Info):
     #     loader = getLoadersFromInfo(info=info).
@@ -96,29 +96,34 @@ class FieldGQL:
     @classmethod
     def getLoader(cls, info): 
         return getLoadersFromInfo(info).GQLFieldModel
+    data: strawberry.Private[object]
+
     @classmethod
     async def resolve_reference(cls,info: strawberry.types.Info,id:uuid.UUID):
         #pozor jestli je id typu uuid nebo str
         loader=cls.getLoader(info)
         instance=await loader.load(id)
-        instance.__strawberry_definition__=cls.__strawberry_definition__
-        return instance
+        # instance.__strawberry_definition__=cls.__strawberry_definition__
+        # return instance
+        result = cls(data=instance)
+        return result
     
     @strawberry.field(description="")
     def name(self, info: strawberry.types.Info) -> str:
-        return ""
+        return self.data.name
     
     @strawberry.field(description="blabla")
-    def description(self, info: strawberry.types.Info) -> str:
-        return "description"
+    def description(self, info: strawberry.types.Info) -> typing.Optional["str"]:
+        return self.data.description
+    #typing optional
     
     @strawberry.field(description="blabla")
     async def master_type(self, info: strawberry.types.Info) -> typing.Optional["TypeGQL"]:
-        result = await TypeGQL.resolve_reference(info=info,id=self.master_type_id)
+        result = await TypeGQL.resolve_reference(info=info, id=self.data.master_type_id)
         return result
 
     @strawberry.field(description="")
-    def args(self, info: strawberry.types.Info) -> typing.List["InputGQL"]:
+    def args(self, info: strawberry.types.Info) -> typing.List["ArgGQL"]:
         return []
     
     @strawberry.field(description="type of this field")
@@ -127,12 +132,12 @@ class FieldGQL:
         return result
     
     @strawberry.field(description="")
-    def is_deprecated(self, info: strawberry.types.Info) -> bool:
-        return False
+    def is_deprecated(self, info: strawberry.types.Info) -> typing.Optional["bool"]:
+        return self.data.is_deprecated
     
     @strawberry.field(description="")
-    def deprecation_reason(self, info: strawberry.types.Info) -> str:
-        return ""
+    def deprecation_reason(self, info: strawberry.types.Info) -> typing.Optional["str"]:
+        return self.data.deprecationReason
 
 @strawberry.enum(name="My__TypeKind")
 class TypeKindGQL(Enum):
@@ -181,7 +186,7 @@ class DirectiveGQL:
         return []
 
     @strawberry.field(description="")
-    def args(self, info: strawberry.types.Info) -> typing.List["InputGQL"]:
+    def args(self, info: strawberry.types.Info) -> typing.List["ArgGQL"]:
         return []
 
 import inspect
@@ -205,9 +210,11 @@ class TypeGQL:
     async def resolve_reference(cls,info: strawberry.types.Info,id:uuid.UUID):
         #pozor jestli je id typu uuid nebo str
         loader=cls.getLoader(info)
-        instance=await loader.load(id)
-        instance.__strawberry_definition__=cls.__strawberry_definition__
-        return instance
+        instance = await loader.load(id)
+        # instance.__strawberry_definition__=cls.__strawberry_definition__
+        # return instance
+        result = cls(data=instance)
+        return result
 
 
     # @strawberry.field(description="")
@@ -217,23 +224,23 @@ class TypeGQL:
     
     @strawberry.field(description="")
     def name(self, info: strawberry.types.Info) -> str:
-        return self.name
+        return self.data.name
     
     @strawberry.field(description="")
-    def description(self, info: strawberry.types.Info) -> str:
-        return self.description
+    def description(self, info: strawberry.types.Info) -> typing.Optional["str"]:
+        return self.data.description
     
     @strawberry.field(description="")
-    def is_deprecated(self, info: strawberry.types.Info) -> bool:
-        return self.isDeprecated
+    def is_deprecated(self, info: strawberry.types.Info) -> typing.Optional["bool"]:
+        return self.data.is_deprecated
     
     @strawberry.field(description="")
-    def deprecation_reason(self, info: strawberry.types.Info) -> str:
-        return self.deprecationReason
+    def deprecation_reason(self, info: strawberry.types.Info) -> typing.Optional["str"]:
+        return self.data.deprecationReason
 
     @strawberry.field(description="")
     async def fields(self, info: strawberry.types.Info, include_deprecated: bool = True) -> typing.List["FieldGQL"]:
-        id = self.id
+        id = self.data.id
         loader = FieldGQL.getLoader(info=info)
         rows = await loader.filter_by(master_type_id=id)
         futures=(FieldGQL.resolve_reference(info=info,id=row.id)for row in rows)
@@ -254,11 +261,11 @@ class TypeGQL:
         return []
     
     @strawberry.field(description="")
-    def input_fields(self, info: strawberry.types.Info) -> typing.List["InputGQL"]:
+    def input_fields(self, info: strawberry.types.Info) -> typing.List["ArgGQL"]:
         return []
     
     @strawberry.field(description="")
-    def of_type(self, info: strawberry.types.Info) -> "InputGQL":
+    def of_type(self, info: strawberry.types.Info) -> "ArgGQL":
         return self.typeof_id
     
     pass
@@ -266,9 +273,12 @@ class TypeGQL:
 @strawberry.type(name="My__Schema")
 class SchemaGQL:
     @strawberry.field(description="")
-    def types(self, info: strawberry.types.Info) -> typing.Optional[typing.List["TypeGQL"]]:
+    async def types(self, info: strawberry.types.Info) -> typing.Optional[typing.List["TypeGQL"]]:
         print(info.root_value)
-        return []
+        loader = TypeGQL.getLoader(info)
+        rows = await loader.page()
+        results = [TypeGQL(data=row) for row in rows]
+        return results
     
     @strawberry.field(description="")
     def query_type(self, info: strawberry.types.Info) -> "TypeGQL":
@@ -331,5 +341,5 @@ class MutationGql:
 
 
 
-schema = strawberry.federation.Schema(query=Query, mutation=Mutation, types=(TypeGQL,))
+schema = strawberry.federation.Schema(query=QueryGQL, mutation=Mutation, types=(TypeGQL,))
 # schema = strawberry.federation.Schema(query=Query)
