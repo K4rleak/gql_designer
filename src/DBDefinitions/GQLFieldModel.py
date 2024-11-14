@@ -24,7 +24,7 @@ class GQLFieldModel(BaseModel):
     master_type_id = Column(ForeignKey('types.id'), index=True, comment="type which owns this field")
 
 
-    typeof_id = Column(ForeignKey("types.id"), index=True, comment="type of this field")
+    typeof_id = Column(ForeignKey('types.id'), index=True, comment="type of this field")
     #co to je za typ fieldu
    
     # typeof = relationship("GQLTypeModel", viewonly=True)

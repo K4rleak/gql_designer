@@ -11,11 +11,12 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from .Base import BaseModel
 
-class GQLTypeInterfaceRelationModel(BaseModel):
-    """Spravuje data spojena se skupinou"""
+class GQLPossibleTypeRelationModel(BaseModel):
+    """Spravuje mozne typy spojene s typem"""
 
-    __tablename__ = "type_interface_association"
+    __tablename__ = "possible_types_association"
 
     type_id = Column(ForeignKey('types.id'), primary_key=True)
-    interface_id = Column(ForeignKey('interfaces.id'), primary_key=True)
+    possible_type_id = Column(ForeignKey('types.id'), primary_key=True)
+ 
 
