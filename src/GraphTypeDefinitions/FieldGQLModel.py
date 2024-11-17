@@ -41,3 +41,4 @@ class FieldGQLModel:
 
 @strawberry.type(description="all fields")
 async def field_page(self) -> typing.List["FieldGQLModel"]:
+    pass

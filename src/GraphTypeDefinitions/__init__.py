@@ -35,16 +35,7 @@ import datetime
 from .query import Query
 from .mutation import Mutation
 
-from .userGQLModel import UserGQLModel # jen jako demo
-from .groupGQLModel import GroupGQLModel
-from .groupTypeGQLModel import GroupTypeGQLModel
-from .membershipGQLModel import MembershipGQLModel
-from .roleGQLModel import RoleGQLModel
-from .roleCategoryGQLModel import RoleCategoryGQLModel
-from .roleTypeGQLModel import RoleTypeGQLModel
-
-from .RBACObjectGQLModel import RBACObjectGQLModel
 from .BaseGQLModel import IDType
 
-schema = strawberry.federation.Schema(query=Query, types=(RBACObjectGQLModel, IDType), mutation=Mutation)
+schema = strawberry.federation.Schema(query=Query, types=(IDType, ), mutation=Mutation)
 # schema = strawberry.federation.Schema(query=Query)

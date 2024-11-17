@@ -39,3 +39,7 @@ class TypeGQLModel:
         return self.data.get("of_type", None)
     
     pass
+
+@strawberry.field(description="primary key")
+async def type_page(self) -> typing.List[TypeGQLModel]:
+    return []

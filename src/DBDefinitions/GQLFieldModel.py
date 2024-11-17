@@ -18,5 +18,6 @@ class GQLFieldModel(BaseModel):
 
     name = Column(String, comment="name of the group")
     typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
+    master_type_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
    
     typeof = relationship("GQLTypeModel", viewonly=True)
