@@ -11,12 +11,15 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from .Base import BaseModel
 
-class GQLArgModel(BaseModel):
+class InputValueModel(BaseModel):
     """Spravuje data spojena se skupinou"""
 
     __tablename__ = "args"
 
     name = Column(String, comment="name of the group")
-    typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
+    description = Column(String, comment="description of the type")
+
+    oftype_id = Column(ForeignKey("types.id"), index=True, nullable=True, comment="typeOf")
+    field_id = Column(ForeignKey("fields.id"), index=True, comment="field where arg is placed")
    
-    typeof = relationship("GQLTypeModel", viewonly=True)
+    typeof = relationship("TypeModel", viewonly=True)   

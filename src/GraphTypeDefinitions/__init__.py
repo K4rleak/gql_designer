@@ -1,28 +1,4 @@
-import typing
-from typing import List, Union, Optional
-import strawberry
-import uuid
-import datetime
-
-# from contextlib import asynccontextmanager
-
-
-# @asynccontextmanager
-# async def withInfo(info):
-#     asyncSessionMaker = info.context["asyncSessionMaker"]
-#     async with asyncSessionMaker() as session:
-#         try:
-#             yield session
-#         finally:
-#             pass
-
-
-# def getLoader(info):
-#     return info.context["all"]
-
-
-import datetime
-    
+   
 ###########################################################################################################################
 #
 # Schema je pouzito v main.py, vsimnete si parametru types, obsahuje vyjmenovane modely. Bez explicitniho vyjmenovani
@@ -32,10 +8,7 @@ import datetime
 #
 ###########################################################################################################################
 
-from .query import Query
-from .mutation import Mutation
+from .creators import createSchema
 
-from .BaseGQLModel import IDType
-
-schema = strawberry.federation.Schema(query=Query, types=(IDType, ), mutation=Mutation)
+# schema = createSchema()
 # schema = strawberry.federation.Schema(query=Query)

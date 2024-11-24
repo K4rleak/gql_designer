@@ -7,11 +7,10 @@ from sqlalchemy import (
     Boolean,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.hybrid import hybrid_property
 
 from .Base import BaseModel
 
-class GQLTypeModel(BaseModel):
+class TypeModel(BaseModel):
     """Spravuje data spojena se skupinou"""
 
     __tablename__ = "types"
@@ -22,6 +21,7 @@ class GQLTypeModel(BaseModel):
     isDeprecated = Column(Boolean, comment="if it is depreacted", default=False)
     deprecationReason = Column(String, comment="the reason why it is deprecated", nullable=True)
 
-    typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
-   
-    typeof = relationship("GQLTypeModel", viewonly=True)
+    oftype_id = Column(ForeignKey("types.id"), index=True, nullable=True, comment="typeOf")
+    schema_id = Column(ForeignKey("schemas.id"), index=True, comment="schema")
+
+    typeof = relationship("TypeModel", viewonly=True)

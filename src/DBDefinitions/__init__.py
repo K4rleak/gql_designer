@@ -2,58 +2,10 @@ import sqlalchemy
 
         
 from .Base import BaseModel
-from .UUID import UUIDColumn
-from .UserModel import UserModel
-from .MembershipModel import MembershipModel
-from .GroupModel import (
-    GroupModel,
-    GroupTypeModel,
-    GroupCategoryModel
-    )
-from .RoleModel import (
-    RoleModel,
-    RoleTypeModel,
-    RoleCategoryModel
-)
-from .RoleTypeListModel import RoleTypeListModel
-
-from .StateTransitionModel import StateTransitionModel
-from .StateMachineModel import (
-    StateMachineModel,
-    StatemachineTypeModel,
-    StatemachineCategoryModel
-)
-from .StateModel import StateModel
-
-systemModels = [
-    RoleCategoryModel,
-    RoleTypeModel,
-    GroupCategoryModel,
-    GroupTypeModel,
-    StatemachineCategoryModel,
-    StatemachineTypeModel
-]
-
-allModels = [
-    RoleCategoryModel,
-    RoleTypeModel,
-    GroupCategoryModel,
-    GroupTypeModel,
-
-    UserModel,
-    GroupModel,
-    RoleModel,
-
-    MembershipModel,
-
-    RoleTypeListModel,
-
-    StatemachineCategoryModel,
-    StatemachineTypeModel,
-    StateMachineModel,
-    StateModel,
-    StateTransitionModel
-]
+from .FieldModel import FieldModel
+from .InputValueModel import InputValueModel
+from .SchemaModel import SchemaModel
+from .TypeModel import TypeModel
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -110,7 +62,7 @@ def ComposeConnectionString():
     """
     user = os.environ.get("POSTGRES_USER", "postgres")
     password = os.environ.get("POSTGRES_PASSWORD", "example")
-    database = os.environ.get("POSTGRES_DB", "data")
+    database = os.environ.get("POSTGRES_DB", "designer")
     hostWithPort = os.environ.get("POSTGRES_HOST", "localhost:5432")
 
     driver = "postgresql+asyncpg"  # "postgresql+psycopg2"

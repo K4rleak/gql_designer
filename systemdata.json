@@ -1,0 +1,15 @@
+{
+    "schemas": [
+        {
+            "id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
+            "name": "demoschema"
+        }
+    ],
+    "types": [
+        {
+            "id": "4ad7334d-13f5-495f-9b71-6e675406e2c2",
+            "name": "firsttype",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        }
+    ]
+}

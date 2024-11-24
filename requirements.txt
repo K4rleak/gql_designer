@@ -8,9 +8,12 @@ requests
 
 sqlalchemy
 sqlalchemy_utils
+asyncpg
 
 pydantic
 starlette
 strawberry-graphql
+
+aiodataloader
 
 https://github.com/hrbolek/uoishelpers/archive/refs/heads/main.zip

@@ -52,13 +52,16 @@ def getUserFromInfo(info):
     # logging.debug("getUserFromInfo", result)
     return result
 
+def getLoadersFromContext(context):
+    loaders = context.get("loaders", None)
+    assert loaders is not None, f"'loaders' key missing in context"
+    return loaders
+
 def getLoadersFromInfo(info):
     # print("info", info)
     context = info.context
     # print("context", context)
-    loaders = context.get("loaders", None)
-    assert loaders is not None, f"'loaders' key missing in context"
-    return loaders
+    return getLoadersFromContext(context=context)
 
 def createLoadersContext(asyncSessionMaker):
     return {

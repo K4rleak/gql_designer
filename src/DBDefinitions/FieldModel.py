@@ -11,13 +11,15 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from .Base import BaseModel
 
-class GQLFieldModel(BaseModel):
+class FieldModel(BaseModel):
     """Spravuje data spojena se skupinou"""
 
     __tablename__ = "fields"
 
     name = Column(String, comment="name of the group")
-    typeof_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
+    description = Column(String, comment="description of the type")
+
+    oftype_id = Column(ForeignKey("types.id"), index=True, nullable=True, comment="typeOf")
     master_type_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
    
-    typeof = relationship("GQLTypeModel", viewonly=True)
+    typeof = relationship("TypeModel", viewonly=True)
