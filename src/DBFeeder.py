@@ -4,6 +4,7 @@ from src.DBDefinitions import (
     SchemaModel,
     TypeModel,
     FieldModel,
+    InputValueModel
 )
 
 
@@ -29,6 +30,7 @@ async def initDB(asyncSessionMaker, filename="./systemdata.json"):
                 SchemaModel,
                 TypeModel,
                 FieldModel,
+                InputValueModel
             ]
     else:
         dbModels = [

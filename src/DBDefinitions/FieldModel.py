@@ -4,7 +4,7 @@ from sqlalchemy import (
     String,
     ForeignKey,
     DateTime,
-    Boolean,
+    Boolean
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -22,4 +22,4 @@ class FieldModel(BaseModel):
     oftype_id = Column(ForeignKey("types.id"), index=True, nullable=True, comment="typeOf")
     master_type_id = Column(ForeignKey("types.id"), index=True, comment="typeOf")
    
-    typeof = relationship("TypeModel", viewonly=True)
+    typeof = relationship("TypeModel", foreign_keys=[oftype_id], viewonly=True)

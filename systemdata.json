@@ -2,14 +2,56 @@
     "schemas": [
         {
             "id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
-            "name": "demoschema"
+            "name": "demoschema",
+            "mutation_type_id": "7ec20376-41ac-4d5a-be74-19d6272670c8",
+            "query_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf"
         }
     ],
     "types": [
         {
+            "id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "name": "Query",
+            "kind": "OBJECT",
+            "description": "Query desc",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "7ec20376-41ac-4d5a-be74-19d6272670c8",
+            "name": "Mutation",
+            "kind": "OBJECT",
+            "description": "Mutation desc",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
             "id": "4ad7334d-13f5-495f-9b71-6e675406e2c2",
             "name": "firsttype",
+            "kind": "OBJECT",
+            "description": "firsttype desc",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "98fc4b29-2715-4a37-810d-91fc143f08ee",
+            "name": "strproxy",
+            "kind": "INPUT_OBJECT",
+            "description": "strproxy desc",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        }
+    ],
+    "fields": [
+        {
+            "id": "272dc317-5bbf-461d-929d-7c43d95a7fae",
+            "name": "by_id",
+            "description": "field desc",
+            "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "oftype_id": "4ad7334d-13f5-495f-9b71-6e675406e2c2"
+        }
+    ],
+    "args": [
+        {
+            "id": "35bc18a7-01c9-4ee3-b516-086594b3e618",
+            "name": "id",
+            "field_id": "272dc317-5bbf-461d-929d-7c43d95a7fae",
+            "oftype_id": "98fc4b29-2715-4a37-810d-91fc143f08ee"
         }
     ]
 }
