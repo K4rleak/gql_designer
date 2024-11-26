@@ -38,5 +38,29 @@
             "is_deprecated": true,
             "deprecationReason":"Je zastaraly"
         }
+    ],
+    "interfaces": [
+        {   
+            "id":"01932ad9-9297-7cd8-9b47-c903a88887db",
+            "name" : "Rozhrani 1",
+            "description" : "Moje rozhrani",
+            "isDeprecated" : false
+        }
+    ],
+    "type_interface_association": [
+        {   
+            "id":"01932ad6-207e-7882-995c-0e8c9c1a6b97",
+            "type_id" :"0192fc1c-9bbe-70e5-ac74-be3cdd19b4ab",
+            "interface_id" :"01932ad9-9297-7cd8-9b47-c903a88887db"
+        }
+    ],
+    "args": [
+        {
+            "name":"limit",
+            "id":"019335b8-23af-7969-af12-9a851c8a5e41",
+            "description":"Limits the number of results",
+            "default_value":"100",
+            "typeof_id":"0192fc1c-9bbe-70e5-ac74-be3cdd19b4ab"
+        }
     ]
 }

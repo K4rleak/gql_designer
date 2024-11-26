@@ -22,6 +22,7 @@ from strawberry.fastapi import GraphQLRouter
 from contextlib import asynccontextmanager
 from src.DBDefinitions import startEngine,ComposeConnectionString
 from src.GraphTypeDefinitions import schema
+from fastapi.responses import FileResponse
 
 
 
@@ -170,4 +171,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 graphql_app = GraphQLRouter(schema, context_getter=get_context)
 
-app.include_router(graphql_app, prefix="/graphql")
+app.include_router(graphql_app, prefix="/gql")
+
+@app.get("/voyager", response_class=FileResponse)
+async def graphiql():
+    realpath = os.path.realpath("./voyager.html")
+    return realpath

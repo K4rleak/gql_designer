@@ -5,9 +5,10 @@ from .Base import BaseModel
 from .GQLTypeModel import GQLTypeModel
 from .GQLInterfacesModel import GQLInterfaceModel
 from .UUID import UUIDColumn
-from .type_interface_association import GQLTypeInterfaceRelationModel
+from .GQLTypeInterfaceRelationModel import GQLTypeInterfaceRelationModel
 from .GQLFieldModel import GQLFieldModel
 from .GQLPossibleTypeRelationModel import GQLPossibleTypeRelationModel
+from .GQLArgModel import GQLArgModel
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session

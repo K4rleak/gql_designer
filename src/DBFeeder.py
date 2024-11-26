@@ -5,7 +5,7 @@ import uuid
 from uoishelpers.feeders import ImportModels
 
 from src.DBDefinitions import (
-    GQLFieldModel,GQLTypeModel,GQLPossibleTypeRelationModel
+    GQLFieldModel,GQLTypeModel,GQLPossibleTypeRelationModel,GQLInterfaceModel,GQLTypeInterfaceRelationModel,GQLArgModel,GQLFieldArgsRelationModel
     )
 
 
@@ -52,10 +52,10 @@ async def initDB(asyncSessionMaker, filename="./systemdata.json"):
     DEMODATA = os.environ.get("DEMODATA", None) in ["True", "true"]    
     if DEMODATA:
         dbModels = [
-            GQLTypeModel,GQLFieldModel,GQLPossibleTypeRelationModel
+            GQLTypeModel,GQLFieldModel,GQLPossibleTypeRelationModel,GQLInterfaceModel,GQLTypeInterfaceRelationModel,GQLArgModel
         ]
     else:
-        dbModels = [GQLTypeModel,GQLFieldModel,GQLPossibleTypeRelationModel]
+        dbModels = [GQLTypeModel,GQLFieldModel,GQLPossibleTypeRelationModel,GQLInterfaceModel,GQLTypeInterfaceRelationModel,GQLArgModel]
 
     jsonData = get_demodata(filename=filename)
     await ImportModels(asyncSessionMaker, dbModels, jsonData)

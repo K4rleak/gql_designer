@@ -54,23 +54,36 @@ from .mutation import Mutation
 
 @strawberry.type(name="My__InputValue")
 class ArgGQL:
-    # @classmethod
-    # def getloader(cls,info: strawberry.types.Info):
-    #     loader = getLoadersFromInfo(info=info).
-    @strawberry.field(description="")
-    def name(self, info: strawberry.types.Info) -> str:
-        return ""
+    @classmethod
+    def getLoader(cls, info): 
+        return getLoadersFromInfo(info).GQLArgModel
+    data: strawberry.Private[object]
+
+    @classmethod
+    async def resolve_reference(cls,info: strawberry.types.Info,id:uuid.UUID):
+        #pozor jestli je id typu uuid nebo str
+        loader=cls.getLoader(info)
+        instance=await loader.load(id)
+        # instance.__strawberry_definition__=cls.__strawberry_definition__
+        # return instance
+        result = cls(data=instance)
+        return result
     
     @strawberry.field(description="")
-    def description(self) -> str:
-        return "description"
+    def name(self, info: strawberry.types.Info) -> str:
+        return self.data.name
+    
+    @strawberry.field(description="")
+    def description(self, info: strawberry.types.Info) -> typing.Optional["str"]:
+        return self.data.description
 
     @strawberry.field(description="")
-    def type(self) -> "TypeGQL":
-        return None
+    async def type(self, info: strawberry.types.Info) -> typing.Optional["TypeGQL"]:
+        result = await TypeGQL.resolve_reference(info=info, id=self.data.master_type_id)
+        return result
 
     def default_value(self) -> str:
-        return ""
+        return self.data.default_value
 
 @strawberry.type(name="My__EnumValue")
 class EnumGQL:
@@ -123,8 +136,13 @@ class FieldGQL:
         return result
 
     @strawberry.field(description="")
-    def args(self, info: strawberry.types.Info) -> typing.List["ArgGQL"]:
-        return []
+    async def args(self, info: strawberry.types.Info) -> typing.List["ArgGQL"]:
+        id = self.data.id
+        loader = ArgGQL.getLoader(info=info)
+        rows = await loader.filter_by(master_type_id=id)
+        futures=(FieldGQL.resolve_reference(info=info,id=row.id)for row in rows)
+        results=await asyncio.gather(*futures)
+        return results
     
     @strawberry.field(description="type of this field")
     async def type(self, info: strawberry.types.Info) -> typing.Optional["TypeGQL"]:
@@ -248,15 +266,14 @@ class TypeGQL:
         return results
     
     @strawberry.field(description="")
-    def interfaces(self, info: strawberry.types.Info) -> typing.List["TypeGQL"]:
-        # id = self.data.id
-        # loader = FieldGQL.getLoader(info=info)
-        # rows = await loader.filter_by(master_type_id=id)
-        # futures=(FieldGQL.resolve_reference(info=info,id=row.id)for row in rows)
-        # results=await asyncio.gather(*futures)
-        # return results
-        raise NotImplementedError("This method is not implemented yet.")
-        return []
+    async def interfaces(self, info: strawberry.types.Info) -> typing.List["TypeGQL"]:
+        #loader v pripade mezilehle tabulky
+        id = self.data.id
+        loader = getLoadersFromInfo(info=info).GQLTypeInterfaceRelationModel
+        rows = await loader.filter_by(type_id=id)
+        futures=(TypeGQL.resolve_reference(info=info,id=row.interface_id)for row in rows)
+        results=await asyncio.gather(*futures)
+        return results
     
     @strawberry.field(description="")
     async def possible_types(self, info: strawberry.types.Info) -> typing.List["TypeGQL"]:
@@ -310,8 +327,12 @@ class SchemaGQL:
     
 @strawberry.type()
 class QueryGQL:
-    @strawberry.field(description="")
+    @strawberry.field(description="Fetch the schema details")
     def schema(self, info: strawberry.types.Info) -> "SchemaGQL":
+        result = SchemaGQL()
+        return result
+    @strawberry.field(description="Fetch a type by its ID")
+    def type_by_id(self, info: strawberry.types.Info, id: int) -> "TypeGQL":
         result = SchemaGQL()
         return result
 
