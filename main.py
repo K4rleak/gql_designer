@@ -94,7 +94,8 @@ async def apigql_post(data: Item, request: Request):
     result = await schema.execute(
         query=data.query, 
         variable_values=data.variables,
-        operation_name=data.operationName
+        operation_name=data.operationName,
+        context_value=context
         )
     
     return dataclasses.asdict(result)
