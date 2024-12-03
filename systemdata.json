@@ -52,6 +52,12 @@
             "name": "id",
             "field_id": "272dc317-5bbf-461d-929d-7c43d95a7fae",
             "oftype_id": "98fc4b29-2715-4a37-810d-91fc143f08ee"
+        },
+        {
+            "id": "01937280-c03b-7d44-b69a-c5ee2258a6a5",
+            "name": "id2",
+            "field_id": "272dc317-5bbf-461d-929d-7c43d95a7fae",
+            "oftype_id": "98fc4b29-2715-4a37-810d-91fc143f08ee"
         }
     ]
 }
