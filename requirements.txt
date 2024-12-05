@@ -9,6 +9,7 @@ requests
 sqlalchemy
 sqlalchemy_utils
 asyncpg
+chevron
 
 pydantic
 starlette

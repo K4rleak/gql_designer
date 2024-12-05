@@ -4,6 +4,7 @@ import asyncio
 import strawberry
 import strawberry.types
 import datetime
+import chevron
 
 from uoishelpers.resolvers import Insert, InsertError, Update, UpdateError, Delete, DeleteError
 from ..Dataloaders import getLoadersFromContext
@@ -27,6 +28,21 @@ class ArgumentDeleteModel:
     id: uuid.UUID
     # field_id: typing.Optional[uuid.UUID] = None
 
+@strawberry.input(description="")
+class ArgumentUpdateModel:
+    #lastchange: datetime.datetime = strawberry.field(default=None, description="time stamp")
+    id: uuid.UUID = strawberry.field(default=None, description="primary key value")
+    field_id: typing.Optional[uuid.UUID] = strawberry.field(description="")
+    oftype_id: typing.Optional[uuid.UUID] = strawberry.field(description="")
+    default_value: typing.Optional[str] = strawberry.field(description="name of new field will", default=None)
+    name: typing.Optional[str] = strawberry.field(description="")
+    description: typing.Optional[str] = strawberry.field(description="name of new field will", default=None)
+
+
+
+    # createdby: strawberry.Private[IDType] = None
+    # rbacobject: strawberry.Private[IDType] = None
+
 
 @strawberry.input(description="initial values for new field")
 class FieldDefinition:
@@ -43,6 +59,15 @@ class FieldDeleteModel:
     id: uuid.UUID
     # field_id: typing.Optional[uuid.UUID] = None
 
+@strawberry.input(description="")
+class FieldUpdateModel:
+    #lastchange: datetime.datetime = strawberry.field(default=None, description="time stamp")
+    id: uuid.UUID = strawberry.field(default=None, description="primary key value")
+    oftype_id: typing.Optional[uuid.UUID] = strawberry.field(description="")
+    master_type_id: typing.Optional[uuid.UUID] = strawberry.field(description="")
+    name: typing.Optional[str] = strawberry.field(description="")
+    description: typing.Optional[str] = strawberry.field(description="")
+
 @strawberry.input(description="initial values for new field")
 class TypeDefinition:
     name: str = strawberry.field(description="type name where field will be created")
@@ -50,6 +75,21 @@ class TypeDefinition:
 @strawberry.input(description="values for argument deletion")
 class TypeDeleteModel:
     id: uuid.UUID
+
+@strawberry.input(description="initial values for new field")
+class TypeUpdateModel:
+    id: uuid.UUID = strawberry.field(default=None, description="primary key value")
+    name: typing.Optional[str] = strawberry.field(description="")
+    description: typing.Optional[str] = strawberry.field(description="")
+    kind: typing.Optional[str] = strawberry.field(description="")
+    isDeprecated: typing.Optional[bool] = strawberry.field(description="")
+    deprecationReason: typing.Optional[str] = strawberry.field(description="")
+    schema_id: typing.Optional[uuid.UUID] = strawberry.field(description="")
+
+@strawberry.input(description="initial values for new field")
+class CodeGenerationInput:
+    id: uuid.UUID = strawberry.field(default=None, description="primary key value")
+    #fields: typing.List[FieldDefinition] = strawberry.field(description="list of fields")
 
 @strawberry.mutation(description="")
 async def create_type(self, info: strawberry.types.Info, type: TypeDefinition) -> typing.Optional[str]:
@@ -151,14 +191,82 @@ async def type_remove(self, info: strawberry.types.Info, type: TypeDeleteModel) 
     return "Record deleted successfully."
 
 @strawberry.mutation(description="")
-async def field_insert_arg(self, info: strawberry.types.Info, field: FieldDefinition) -> typing.Optional[str]:
+async def arg_update(self, info: strawberry.types.Info, arg: ArgumentUpdateModel) -> typing.Optional[str]:
     context = info.context
-    loader = getLoadersFromContext(context=context).TypeModel
-
+    arg_loader = getLoadersFromContext(context=context).InputValueModel
     try:
-        await loader.delete(type.id)
+        await arg_loader.update(arg)
     except Exception as e:
         return f"{e}"
-    return "Record created successfully."
+    return "Record updated successfully."
+
+@strawberry.mutation(description="")
+async def field_update(self, info: strawberry.types.Info, field: FieldUpdateModel) -> typing.Optional[str]:
+    context = info.context
+    loader = getLoadersFromContext(context=context).FieldModel
+    try:
+        await loader.update(field)
+    except Exception as e:
+        return f"{e}"
+    return "Record updated successfully."
+
+@strawberry.mutation(description="")
+async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) -> typing.Optional[str]:
+    context = info.context
+    loader = getLoadersFromContext(context=context).TypeModel
+    try:
+        await loader.update(type)
+    except Exception as e:
+        return f"{e}"
+    return "Record updated successfully."
+
+@strawberry.mutation(description="")
+async def generate_python_code(self, info: strawberry.types.Info, type: CodeGenerationInput) -> typing.Optional[str]:
+    context = info.context
+    type_loader = getLoadersFromContext(context=context).TypeModel
+    field_loader = getLoadersFromContext(context=context).FieldModel
+    
+    type_row = await type_loader.load(type.id)
+    fields = await field_loader.filter_by(master_type_id = type.id)
+
+    code_lines = []
+    code_lines.extend([f"class {type_row.name}GQLModel(BaseGQLModel):",
+    "   @classmethod",
+    "   def getLoader(cls, info: strawberry.types.Info):",
+    "       return getLoadersFromInfo(info).TypeModel"
+])
+
+    field_names = [field.name for field in fields]
+
+    data = {
+    "field_names": field_names
+}
+
+    fields_template = """{{#field_names}}
+   {{.}}: typing.Optional[str] = strawberry.field(
+    default=None,
+    description="Facility name assigned by an administrator",
+    permission_classes=[
+        OnlyForAuthentized
+    ]
+    )
+    {{/field_names}}"""
+
+    result = chevron.render(fields_template, data)
+    
+#     for attr, value in vars(type).items():
+        # code_lines.extend([f"   {attr}: typing.Optional[str] = strawberry.field(",
+        #            "       default=None,",
+        #            '       description="""Facility name assigned by an administrator""",',
+        #            "       permission_classes=[",
+        #            "           OnlyForAuthenticated",
+        #            "       ]",
+        #            "   )"
+# ])
+    generated_code = "\n".join(code_lines)
+    print(generated_code)
+    print(result)
+    return generated_code
+
 
 

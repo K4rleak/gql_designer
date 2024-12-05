@@ -7,7 +7,7 @@ import strawberry
 
 from strawberry.tools import create_type as create_strawberry_type
 
-from .designerMutations import create_field, create_type , create_arg, arg_remove, type_remove, field_remove,type_remove
+from .designerMutations import create_field, create_type , create_arg, arg_remove, type_remove, field_remove,type_remove,arg_update,field_update,type_update,generate_python_code
 from ..Dataloaders import getLoadersFromContext
 
 async def loadSchema(*, context):
@@ -243,7 +243,10 @@ async def createMutation(*, context, mutationName, typedef):
         arg_remove,
         type_remove,
         field_remove,
-        type_remove
+        arg_update,
+        field_update,
+        type_update,
+        generate_python_code
     ]
     
     return create_strawberry_type(name=mutationName, fields=fields)
