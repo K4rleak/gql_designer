@@ -222,38 +222,53 @@ async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) 
 
 @strawberry.mutation(description="")
 async def generate_python_code(self, info: strawberry.types.Info, type: CodeGenerationInput) -> typing.Optional[str]:
+    from .template import fields_template
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
-    
+
     type_row = await type_loader.load(type.id)
     fields = await field_loader.filter_by(master_type_id = type.id)
+    fields = [*fields]
+    type_row.fields = fields
+    futures = (type_loader.load(field.oftype_id) for field in fields)
+    values = await asyncio.gather(*futures)
 
-    code_lines = []
-    code_lines.extend([f"class {type_row.name}GQLModel(BaseGQLModel):",
-    "   @classmethod",
-    "   def getLoader(cls, info: strawberry.types.Info):",
-    "       return getLoadersFromInfo(info).TypeModel"
-])
+    for field,value in zip(fields,values):
+        field.of_type = value
 
-    field_names = [field.name for field in fields]
+    
+    #elementary_types = {"int", "str", "bool", "float", "datetime.datetime", "IDType", "uuid.UUID"}
 
+    field_data = [
+        {
+            "name": field.name,
+            "type": field.of_type.name,
+            #pokud null tak jedu dal na dalsi oftype.oftpye
+            #"needs_resolver": "GQLModel" in field.of_type.name
+            "is_vector": field.of_type.name == "null",
+            "resolver": f'ScalarResolver["{field.of_type.name}GQLModel"](fkey_field_name="{field.name}_id")'
+        }
+        for field in fields
+    ]
+
+    for field in fields:
+        print(field.of_type.name)
     data = {
-    "field_names": field_names
+    "fields": field_data,
+    "type_name": type_row.name
 }
 
-    fields_template = """{{#field_names}}
-   {{.}}: typing.Optional[str] = strawberry.field(
-    default=None,
-    description="Facility name assigned by an administrator",
-    permission_classes=[
-        OnlyForAuthentized
-    ]
-    )
-    {{/field_names}}"""
+    # fields_template = """{{#fields}}
+    # {{name}}: typing.Optional[{{type}}] = strawberry.field(
+    #     default=None,
+    #     description="Facility name assigned by an administrator",
+    #     permission_classes=[
+    #         OnlyForAuthentized
+    #     ]
+    #     )
+    # {{/fields}}"""
 
-    result = chevron.render(fields_template, data)
-    
 #     for attr, value in vars(type).items():
         # code_lines.extend([f"   {attr}: typing.Optional[str] = strawberry.field(",
         #            "       default=None,",
@@ -263,10 +278,11 @@ async def generate_python_code(self, info: strawberry.types.Info, type: CodeGene
         #            "       ]",
         #            "   )"
 # ])
-    generated_code = "\n".join(code_lines)
-    print(generated_code)
-    print(result)
-    return generated_code
+    #generated_code = "\n".join(code_lines)
+    #print(generated_code)
+    result = chevron.render(fields_template, data)
+    #print(result)
+    return result
 
 
 
