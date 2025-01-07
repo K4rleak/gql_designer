@@ -35,6 +35,14 @@
             "kind": "INPUT_OBJECT",
             "description": "strproxy desc",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "01943a92-e483-7053-9483-2c16f2deb39c",
+            "name": "ListType",
+            "kind": "LIST",
+            "description": "Typ vracející seznam objektů",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
+            "oftype_id": "4ad7334d-13f5-495f-9b71-6e675406e2c2"
         }
     ],
     "fields": [
@@ -44,6 +52,13 @@
             "description": "field desc",
             "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
             "oftype_id": "4ad7334d-13f5-495f-9b71-6e675406e2c2"
+        },
+        {
+            "id": "01943a97-c787-7be0-be0c-b1fcfe5e5ee8",
+            "name": "by_id2",
+            "description": "field desc2",
+            "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "oftype_id": "01943a92-e483-7053-9483-2c16f2deb39c"
         }
     ],
     "args": [

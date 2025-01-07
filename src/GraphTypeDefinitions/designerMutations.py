@@ -237,51 +237,54 @@ async def generate_python_code(self, info: strawberry.types.Info, type: CodeGene
     for field,value in zip(fields,values):
         field.of_type = value
 
-    
-    #elementary_types = {"int", "str", "bool", "float", "datetime.datetime", "IDType", "uuid.UUID"}
+    async def recursive(oftype_id,field):
+        type = await type_loader.load(oftype_id)
+        innerName = ""
+        if type.oftype_id:
+            # Recursive call and unpacking the result
+            innerName, _ = await recursive(type.oftype_id,field)
+        if type.kind == "SCALAR":
+            return f"""typing.Optional[{type.name}]""", ""
 
+        if type.kind == "OBJECT":
+            return f"""typing.Optional["{type.name}"]""", f"""resolver=ScalarResolver["{type.name}GQLModel"](fkey_field_name="{field.name}_id")"""
+
+        if type.kind == "LIST":
+            # Use the string innerName instead of the entire tuple
+            innerName = innerName.replace("typing.Optional[", "").replace("]", "")
+            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{type.name}GQLModel"](fkey_field_name="{type.name}_id", whereType=None)"""
+        #master type mysto toho type.name
+
+        if type.kind == "NON_NULL":
+            return f"{innerName}", "skibidi"
+        raise Exception("Missing type")
+
+    
+
+    #elementary_types = {"int", "str", "bool", "float", "datetime.datetime", "IDType", "uuid.UUID"}
+    #print(field.of_type.kind)
     field_data = [
         {
             "name": field.name,
             "type": field.of_type.name,
-            #pokud null tak jedu dal na dalsi oftype.oftpye
-            #"needs_resolver": "GQLModel" in field.of_type.name
-            "is_vector": field.of_type.name == "null",
-            "resolver": f'ScalarResolver["{field.of_type.name}GQLModel"](fkey_field_name="{field.name}_id")'
+            # Unpack the return values from recursive
+            "return_type": (return_type := await recursive(field.of_type.id,field))[0],
+            "resolver": return_type[1],
+            "has_resolver": bool(return_type[1])
         }
         for field in fields
     ]
 
-    for field in fields:
-        print(field.of_type.name)
+    # for field in fields:
+    #     result = await recursive(field.of_type.id)  # Await the result
+    #     print(result)
     data = {
     "fields": field_data,
     "type_name": type_row.name
 }
 
-    # fields_template = """{{#fields}}
-    # {{name}}: typing.Optional[{{type}}] = strawberry.field(
-    #     default=None,
-    #     description="Facility name assigned by an administrator",
-    #     permission_classes=[
-    #         OnlyForAuthentized
-    #     ]
-    #     )
-    # {{/fields}}"""
-
-#     for attr, value in vars(type).items():
-        # code_lines.extend([f"   {attr}: typing.Optional[str] = strawberry.field(",
-        #            "       default=None,",
-        #            '       description="""Facility name assigned by an administrator""",',
-        #            "       permission_classes=[",
-        #            "           OnlyForAuthenticated",
-        #            "       ]",
-        #            "   )"
-# ])
-    #generated_code = "\n".join(code_lines)
-    #print(generated_code)
     result = chevron.render(fields_template, data)
-    #print(result)
+    print(result)
     return result
 
 

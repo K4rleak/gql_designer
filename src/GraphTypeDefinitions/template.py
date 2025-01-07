@@ -4,11 +4,13 @@ fields_template = """class {{type_name}}GQLModel(BaseGQLModel):
        return getLoadersFromInfo(info).TypeModel
 {{#fields}}
 
-    {{name}}: typing.Optional[{{type}}] = strawberry.field(
+    {{name}}: {{{return_type}}} = strawberry.field(
         default=None,
         description="Facility name assigned by an administrator",
         permission_classes=[
             OnlyForAuthentized
-        ]
+        ]{{#has_resolver}},
+        {{{resolver}}}
+        {{/has_resolver}}
         )
 {{/fields}}"""
