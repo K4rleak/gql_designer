@@ -43,6 +43,41 @@
             "description": "Typ vracející seznam objektů",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
             "oftype_id": "4ad7334d-13f5-495f-9b71-6e675406e2c2"
+        },
+        {
+            "id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2",
+            "name": "UUID",
+            "kind": "SCALAR",
+            "description": "uuid",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "019487b7-b92d-7a80-b1a6-4f40c9112954",
+            "name": "String",
+            "kind": "SCALAR",
+            "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "019487d0-ac6b-7fff-aaae-c6eab327047e",
+            "name": "DateTime",
+            "kind": "SCALAR",
+            "description": "Date time",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "name": "AcClassificationTypeGQLModel",
+            "kind": "OBJECT",
+            "description": "Classification at the end of semester",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "019487cf-65bd-724c-963a-d47215bb7486",
+            "name": "UserGQLModel",
+            "kind": "OBJECT",
+            "description": "UserGQLModel",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
     "fields": [
@@ -59,6 +94,55 @@
             "description": "field desc2",
             "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
             "oftype_id": "01943a92-e483-7053-9483-2c16f2deb39c"
+        },
+        {
+            "id": "019487b2-6184-7ef2-b9f1-246d293b9b08",
+            "name": "id",
+            "description": "Entity primary key",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "01943a92-e483-7053-9483-2c16f2deb39c"
+        },
+        {
+            "id": "019487b8-0122-7b65-b90e-ac8540964ebe",
+            "name": "name",
+            "description": "Name ",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "019487b9-ecf5-7c5c-8945-069750608084",
+            "name": "nameEn",
+            "description": "English name",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "019487cf-e89f-7603-bc28-6f2bd8efbf92",
+            "name": "createdby",
+            "description": "Who created entity",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487cf-65bd-724c-963a-d47215bb7486"
+        },
+        {
+            "id": "019487cf-e8a0-727c-8ff4-d0850600f938",
+            "name": "changedby",
+            "description": "Who made last change",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487cf-65bd-724c-963a-d47215bb7486"
+        },
+        {
+            "id": "019487cf-e8a1-7468-9c8b-3fad9783a588",
+            "name": "created",
+            "description": "Time of entity introduction",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487d0-ac6b-7fff-aaae-c6eab327047e"
+        },
+        {
+            "id": "019487cf-e8a2-7762-b098-d10eb73ababb",
+            "name": "lastchange",
+            "description": "Time of last update",
+            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
+            "oftype_id": "019487d0-ac6b-7fff-aaae-c6eab327047e"
         }
     ],
     "args": [
