@@ -1,0 +1,41 @@
+class AcClassificationTypeGQLModel(BaseGQLModel):
+   @classmethod
+   def getLoader(cls, info: strawberry.types.Info):
+       return getLoadersFromInfo(info).TypeModel
+
+    id: typing.List["firsttype"] = strawberry.field(
+        default=None,
+        description="Facility name assigned by an administrator",
+        permission_classes=[
+            OnlyForAuthentized
+        ],
+        resolver=VectorResolver["ListTypeGQLModel"](fkey_field_name="ListType_id", whereType=None)
+        )
+
+    name: typing.Optional[Ktring] = strawberry.field(
+        default=None,
+        description="Facility name assigned by an administrator",
+        permission_classes=[
+            OnlyForAuthentized
+        ]        )
+
+    nameEn: typing.Optional[Ktring] = strawberry.field(
+        default=None,
+        description="Facility name assigned by an administrator",
+        permission_classes=[
+            OnlyForAuthentized
+        ]        )
+
+    created: typing.Optional[DateTime] = strawberry.field(
+        default=None,
+        description="Facility name assigned by an administrator",
+        permission_classes=[
+            OnlyForAuthentized
+        ]        )
+
+    lastchange: typing.Optional[DateTime] = strawberry.field(
+        default=None,
+        description="Facility name assigned by an administrator",
+        permission_classes=[
+            OnlyForAuthentized
+        ]        )

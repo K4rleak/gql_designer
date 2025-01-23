@@ -1,48 +1,50 @@
-from uuid6 import uuid7
 import json
+from uuid6 import uuid7
 
-# Původní JSON text
-original_data = {
-    "name": "createdby",
-    "description": "Who created entity",
-    "args": [],
-    "type": {
-    "__typename": "__Type",
-    "kind": "OBJECT",
-    "name": "UserGQLModel",
-    }
-}
+# Load JSON data
+with open("schema_uois.json", "r", encoding="utf-8") as f:
+    json_data = json.load(f)
 
-# Předdefinovaná hodnota master_type_id
-MASTER_TYPE_ID = "019482b0-0335-7f02-83e4-9a62f77b4afa"
+# Get the `types` array
+types = json_data["data"]["__schema"]["types"]
 
+# List of keys you want to print
+keys_to_print = ["name", "kind", "description"]
 
-oftype_mapping = {
-    "UUID": "01943a92-e483-7053-9483-2c16f2deb39c",
-    "String":"019487b7-b92d-7a80-b1a6-4f40c9112954",
-    "UserGQLModel":"1111"
-}
-
-def transform_data(data):
-    
+for item in types:
     new_id = str(uuid7())
-
-    # Extrakce jména z původního datového typu
-    name = data["type"].get("ofType", {}).get("name", "") if  data["type"].get("ofType", {}).get("name", "") else "skrr"
-
+    # Filter and print only the keys you care about
+    filtered_item = {key: value for key, value in item.items() if key in keys_to_print and value is not None}
     
-    transformed_data = {
-        "id": new_id,
-        "name": data["name"],
-        "description": data["description"],
-        "master_type_id": MASTER_TYPE_ID,
-        "oftype_id": oftype_mapping.get(name, "")  # Získání oftype_id z mapování
-    }
+    # Print the filtered item
+    print(
+        "{\n    " + "id:" +",\n    ".join(f'\"{key}\": \"{value}\"' for key, value in filtered_item.items()) + "\n},"
+    )
 
-    return transformed_data
+# Iterace přes každý `type`
+# for type_item in types:
+#     type_name = type_item.get("name", "Unknown")
+#     type_kind = type_item.get("kind", "Unknown")
+#     description = type_item.get("description", "No description")
+    
+#     print(
+#         "{\n    " + ",\n    ".join(f'\"{key}\": \"{value}\"' for key, value in item.items()) + "\n},"
+#     )
 
-# Transformace dat
-new_data = transform_data(original_data)
+#     print(f"Type Name: {type_name}")
+#     print(f"Kind: {type_kind}")
+#     print(f"Description: {description} \n")
 
-# Výstup
-print("{\n    " + ",\n    ".join(f'\"{key}\": \"{value}\"' for key, value in new_data.items()) + "\n},")
+    # Zpracování `fields`, pokud existují
+    # fields = type_item.get("fields", [])
+    # for field in fields:
+    #     field_name = field.get("name", "Unknown")
+    #     field_type = field.get("type", {})
+    #     field_type_name = field_type.get("name", "No type")
+    #     oftype = field_type.get("ofType", {})
+    #     oftype_name = oftype.get("name", "No ofType")
+        
+    #     print(f"  Field Name: {field_name}")
+    #     print(f"  Type Name: {field_type_name}")
+    #     print(f"  OfType Name: {oftype_name}")
+    # print("-" * 40)

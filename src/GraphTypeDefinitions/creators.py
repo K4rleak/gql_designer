@@ -115,7 +115,7 @@ async def createType(*, context, name, typedef):
         for field in loadedType["fields"]
     ]
     fieldfutures = [
-        createFieldResolver(typename=name, name=field["name"])
+        createFieldResolver(typename=name, name=field["name"], context=context)
         for field in loadedType["fields"]
     ]
     fieldvalues = await asyncio.gather(*fieldfutures)
@@ -129,7 +129,7 @@ async def createType(*, context, name, typedef):
     # print(f"createType {name} >> annotations: {hello.__annotations__}", flush=True)
 
     strawberry_fields = [
-        strawberry.field(f.func, description=fields[name].get("description", "missing description"))
+        strawberry.field(f["func"], description=fields[name].get("description", "missing description"))
         for name, f in fields.items()
     ]
     if len(strawberry_fields) == 0:

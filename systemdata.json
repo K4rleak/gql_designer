@@ -53,7 +53,7 @@
         },
         {
             "id": "019487b7-b92d-7a80-b1a6-4f40c9112954",
-            "name": "String",
+            "name": "Ktring",
             "kind": "SCALAR",
             "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
@@ -67,16 +67,9 @@
         },
         {
             "id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
-            "name": "AcClassificationTypeGQLModel",
+            "name": "AcClassificationType",
             "kind": "OBJECT",
             "description": "Classification at the end of semester",
-            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
-        },
-        {
-            "id": "019487cf-65bd-724c-963a-d47215bb7486",
-            "name": "UserGQLModel",
-            "kind": "OBJECT",
-            "description": "UserGQLModel",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
@@ -87,6 +80,13 @@
             "description": "field desc",
             "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
             "oftype_id": "4ad7334d-13f5-495f-9b71-6e675406e2c2"
+        },
+        {
+            "id": "01949207-0d7a-7883-ac05-9effa3c6caec",
+            "name": "AcClassificationById",
+            "description": "field desc",
+            "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "oftype_id": "019482b0-0335-7f02-83e4-9a62f77b4afa"
         },
         {
             "id": "01943a97-c787-7be0-be0c-b1fcfe5e5ee8",
@@ -115,20 +115,6 @@
             "description": "English name",
             "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
             "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
-        },
-        {
-            "id": "019487cf-e89f-7603-bc28-6f2bd8efbf92",
-            "name": "createdby",
-            "description": "Who created entity",
-            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
-            "oftype_id": "019487cf-65bd-724c-963a-d47215bb7486"
-        },
-        {
-            "id": "019487cf-e8a0-727c-8ff4-d0850600f938",
-            "name": "changedby",
-            "description": "Who made last change",
-            "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
-            "oftype_id": "019487cf-65bd-724c-963a-d47215bb7486"
         },
         {
             "id": "019487cf-e8a1-7468-9c8b-3fad9783a588",
