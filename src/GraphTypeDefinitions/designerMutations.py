@@ -8,6 +8,7 @@ import chevron
 
 from uoishelpers.resolvers import Insert, InsertError, Update, UpdateError, Delete, DeleteError
 from ..Dataloaders import getLoadersFromContext
+from .TypeNameResolver import TypeNameResolver
 
 @strawberry.mutation(description="")
 async def create_type(self, name: str) -> bool:
@@ -221,41 +222,53 @@ async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) 
     return "Record updated successfully."
 
 @strawberry.mutation(description="")
-async def generate_python_code(self, info: strawberry.types.Info, type: CodeGenerationInput) -> typing.Optional[str]:
+async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGenerationInput) -> typing.Optional[str]:
     from .template import fields_template
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
 
-    type_row = await type_loader.load(type.id)
-    fields = await field_loader.filter_by(master_type_id = type.id)
+    type_row = await type_loader.load(type_.id)
+    fields = await field_loader.filter_by(master_type_id = type_.id)
     fields = [*fields]
     type_row.fields = fields
     futures = (type_loader.load(field.oftype_id) for field in fields)
     values = await asyncio.gather(*futures)
+    #print(type_row.__tablename__)
 
     for field,value in zip(fields,values):
         field.of_type = value
 
     async def recursive(oftype_id,field):
-        type = await type_loader.load(oftype_id)
+        type_ = await type_loader.load(oftype_id)
         innerName = ""
-        if type.oftype_id:
+        if type_.oftype_id:
             # Recursive call and unpacking the result
-            innerName, _ = await recursive(type.oftype_id,field)
-        if type.kind == "SCALAR":
-            return f"""typing.Optional[{type.name}]""", ""
+            innerName, _ = await recursive(type_.oftype_id,field)
+        if type_.kind == "SCALAR":
+            #type_name=type(TypeNameResolver(type_)).__name__
+            type_map={
+            "String":"str",
+            "DateTime": "datetime.datetime",
+            "UUID":"IDType",
+            "Boolean":"bool",
+            "Int":"int"
+        }
+            type_name=type_map.get(type_.name, None)
+            
 
-        if type.kind == "OBJECT":
-            return f"""typing.Optional["{type.name}"]""", f"""resolver=ScalarResolver["{type.name}GQLModel"](fkey_field_name="{field.name}_id")"""
+            return f"""typing.Optional[{type_name}]""", ""
 
-        if type.kind == "LIST":
+        if type_.kind == "OBJECT":
+            return f"""typing.Optional["{type_.name}"]""", f"""resolver=ScalarResolver["{type_.name}GQLModel"](fkey_field_name="{field.name}_id")"""
+
+        if type_.kind == "LIST":
             # Use the string innerName instead of the entire tuple
             innerName = innerName.replace("typing.Optional[", "").replace("]", "")
-            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{type.name}GQLModel"](fkey_field_name="{type.name}_id", whereType=None)"""
+            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{type_.name}GQLModel"](fkey_field_name="{type_.name}_id", whereType=None)"""
         #master type mysto toho type.name
 
-        if type.kind == "NON_NULL":
+        if type_.kind == "NON_NULL":
             return f"{innerName}", "skibidi"
         raise Exception("Missing type")
 
@@ -263,10 +276,20 @@ async def generate_python_code(self, info: strawberry.types.Info, type: CodeGene
 
     #elementary_types = {"int", "str", "bool", "float", "datetime.datetime", "IDType", "uuid.UUID"}
     #print(field.of_type.kind)
+    # async def TypeNameFromField(field):
+    #     FieldReturnType = await recursive(field.of_type.id,field)
+    #     TypeNameResolved=TypeNameResolver(FieldReturnType[0])
+    #     if isinstance(TypeNameResolved, str):
+    #         return (TypeNameResolved, FieldReturnType[1])
+    #     else:
+    #         return (type(TypeNameResolved).__name__, FieldReturnType[1])
+
+    
     field_data = [
         {
             "name": field.name,
             "type": field.of_type.name,
+            "description": field.description,
             # Unpack the return values from recursive
             "return_type": (return_type := await recursive(field.of_type.id,field))[0],
             "resolver": return_type[1],
@@ -278,12 +301,23 @@ async def generate_python_code(self, info: strawberry.types.Info, type: CodeGene
     # for field in fields:
     #     result = await recursive(field.of_type.id)  # Await the result
     #     print(result)
-    data = {
-    "fields": field_data,
-    "type_name": type_row.name
-}
 
-    result = chevron.render(fields_template, data)
+    TypeNameResolved=TypeNameResolver(type_row)
+    if isinstance(TypeNameResolved,str):
+        type_data = {
+            "fields": field_data,
+            "type_name": TypeNameResolved,
+            "table_name": type_row.__tablename__
+        }
+    else:
+        type_data = {
+            "fields": field_data,
+            "type_name": type(TypeNameResolved).__name__,
+            "table_name": type_row.__tablename__
+        }
+
+
+    result = chevron.render(fields_template, type_data)
     print(result)
     return result
 

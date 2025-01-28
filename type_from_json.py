@@ -17,9 +17,12 @@ for item in types:
     filtered_item = {key: value for key, value in item.items() if key in keys_to_print and value is not None}
     
     # Print the filtered item
-    print(
-        "{\n    " + "id:" +",\n    ".join(f'\"{key}\": \"{value}\"' for key, value in filtered_item.items()) + "\n},"
-    )
+    if "FacilityGQLModel" in filtered_item.values():
+        print(
+            "{\n    " +
+            f'"id": "{new_id}",' + "\n    " +
+            ",\n    ".join(f'"{key}": "{value}"' for key, value in filtered_item.items()) + "\n},"
+        )
 
 # Iterace přes každý `type`
 # for type_item in types:

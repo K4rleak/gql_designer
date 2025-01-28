@@ -50,12 +50,33 @@
             "kind": "SCALAR",
             "description": "uuid",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },       {
+            "id": "0194abd1-c6a5-78f6-b218-194f57cca7b1",
+            "name": "ListTypeIds",
+            "kind": "LIST",
+            "description": "Typ vracející seznam objektů",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
+            "oftype_id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2"
         },
         {
             "id": "019487b7-b92d-7a80-b1a6-4f40c9112954",
-            "name": "Ktring",
+            "name": "String",
             "kind": "SCALAR",
             "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "0194a6c5-06e5-7d17-9cb2-34ca335aec53",
+            "name": "Int",
+            "kind": "SCALAR",
+            "description": "The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "0194a6c8-02c7-7a4e-b960-b917b8427b87",
+            "name": "Boolean",
+            "kind": "SCALAR",
+            "description": "The `Boolean` scalar type represents `true` or `false`.",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         },
         {
@@ -66,10 +87,24 @@
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         },
         {
+            "id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "kind": "OBJECT",
+            "name": "Facility",
+            "description": "Entity representing a Facility",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
             "id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
             "name": "AcClassificationType",
             "kind": "OBJECT",
             "description": "Classification at the end of semester",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54",
+            "name": "UserGQLModel",
+            "kind": "OBJECT",
+            "description": "user",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
@@ -89,6 +124,13 @@
             "oftype_id": "019482b0-0335-7f02-83e4-9a62f77b4afa"
         },
         {
+            "id": "0194a6cd-b84f-75db-884d-f1eb226fe14c",
+            "name": "FacilityById",
+            "description": "field desc",
+            "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "oftype_id": "0194a6be-097a-7c48-a240-29b6542a88bf"
+        },
+        {
             "id": "01943a97-c787-7be0-be0c-b1fcfe5e5ee8",
             "name": "by_id2",
             "description": "field desc2",
@@ -100,7 +142,7 @@
             "name": "id",
             "description": "Entity primary key",
             "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
-            "oftype_id": "01943a92-e483-7053-9483-2c16f2deb39c"
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
         },
         {
             "id": "019487b8-0122-7b65-b90e-ac8540964ebe",
@@ -129,6 +171,97 @@
             "description": "Time of last update",
             "master_type_id": "019482b0-0335-7f02-83e4-9a62f77b4afa",
             "oftype_id": "019487d0-ac6b-7fff-aaae-c6eab327047e"
+        },
+        {
+            "id": "0194a6c9-321e-7592-a2ef-26e9af8dcd5e",
+            "name": "id",
+            "description": "Entity primary key",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2"
+        },
+        {
+            "id": "0194a6c9-3220-71fe-88c1-60a91b5a5115",
+            "name": "name",
+            "description": "Name ",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194a6c9-3221-7e01-abb5-eb838c0b9eac",
+            "name": "nameEn",
+            "description": "English name",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194a6c9-3222-7af5-9cdd-fb2a0b9622e1",
+            "name": "lastchange",
+            "description": "Time of last update",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487d0-ac6b-7fff-aaae-c6eab327047e"
+        },
+        {
+            "id": "0194a6c9-3223-7615-8780-82f9f2be23e0",
+            "name": "created",
+            "description": "Time of entity introduction",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487d0-ac6b-7fff-aaae-c6eab327047e"
+        },
+        {
+            "id": "0194a6c9-3226-7eb1-b89d-9718deb4ebe3",
+            "name": "label",
+            "description": "Facility full name assigned by an administrator",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194a6c9-3227-7ae6-af9a-6f057db674dd",
+            "name": "address",
+            "description": "Facility address",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194a6c9-3228-755b-94ab-d7f0af969880",
+            "name": "valid",
+            "description": "is the facility still valid",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "0194a6c8-02c7-7a4e-b960-b917b8427b87"
+        },
+        {
+            "id": "0194a6c9-3229-713b-aea7-d8c57014a480",
+            "name": "capacity",
+            "description": "Facility's capacity",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "0194a6c5-06e5-7d17-9cb2-34ca335aec53"
+        },
+        {
+            "id": "0194a6c9-322a-719c-b43d-9176387fdaa2",
+            "name": "geometry",
+            "description": "Facility geometry (SVG)",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194a6c9-322b-756b-ba4b-80eed1f7ed16",
+            "name": "geolocation",
+            "description": "Facility geo address (WGS84+zoom)",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
+        {
+            "id": "0194abb8-55fd-7bee-8096-8e279694027a",
+            "name": "changedby",
+            "description": "Who made last change",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54"
+        },
+        {
+            "id": "0194abcd-e4c6-7667-ba4c-2de35e41c8cd",
+            "name": "externalIds",
+            "description": "All related external ids",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "0194abd1-c6a5-78f6-b218-194f57cca7b1"
         }
     ],
     "args": [

@@ -23,6 +23,27 @@ original_data = {
         "deprecationReason": None
     },
     {
+        "name": "externalIds",
+        "description": "All related external ids",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "NON_None",
+        "name": None,
+        "ofType": {
+            "__typename": "__Type",
+            "kind": "LIST",
+            "name": None,
+            "ofType": {
+            "kind": "NON_None",
+            "name": None
+            }
+        }
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
         "name": "name",
         "description": "Name ",
         "args": [],
@@ -59,6 +80,37 @@ original_data = {
         "deprecationReason": None
     },
     {
+        "name": "lastchange",
+        "description": "Time of last update",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "NON_None",
+        "name": None,
+        "ofType": {
+            "__typename": "__Type",
+            "kind": "SCALAR",
+            "name": "DateTime",
+            "ofType": None
+        }
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "created",
+        "description": "Time of entity introduction",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "DateTime",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
         "name": "createdby",
         "description": "Who created entity",
         "args": [],
@@ -85,21 +137,125 @@ original_data = {
         "deprecationReason": None
     },
     {
-        "name": "created",
-        "description": "Time of entity introduction",
+        "name": "label",
+        "description": "Facility full name assigned by an administrator",
         "args": [],
         "type": {
         "__typename": "__Type",
         "kind": "SCALAR",
-        "name": "DateTime",
+        "name": "String",
         "ofType": None
         },
         "isDeprecated": False,
         "deprecationReason": None
     },
     {
-        "name": "lastchange",
-        "description": "Time of last update",
+        "name": "address",
+        "description": "Facility address",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "String",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "valid",
+        "description": "is the facility still valid",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "Boolean",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "capacity",
+        "description": "Facility's capacity",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "Int",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "geometry",
+        "description": "Facility geometry (SVG)",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "String",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "geolocation",
+        "description": "Facility geo address (WGS84+zoom)",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "SCALAR",
+        "name": "String",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "type",
+        "description": "Facility type",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "OBJECT",
+        "name": "FacilityTypeGQLModel",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "eventState",
+        "description": "Intermediate entity linking the event and facility",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "OBJECT",
+        "name": "FacilityEventStateTypeGQLModel",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "masterFacility",
+        "description": "Facility above this",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "OBJECT",
+        "name": "FacilityGQLModel",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "subFacilities",
+        "description": "Facilities inside facility (like buildings in an areal)",
         "args": [],
         "type": {
         "__typename": "__Type",
@@ -107,9 +263,46 @@ original_data = {
         "name": None,
         "ofType": {
             "__typename": "__Type",
-            "kind": "SCALAR",
-            "name": "DateTime",
-            "ofType": None
+            "kind": "LIST",
+            "name": None,
+            "ofType": {
+            "kind": "NON_None",
+            "name": None
+            }
+        }
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "group",
+        "description": "Facility management group",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "OBJECT",
+        "name": "GroupGQLModel",
+        "ofType": None
+        },
+        "isDeprecated": False,
+        "deprecationReason": None
+    },
+    {
+        "name": "plannedLessons",
+        "description": "planned items",
+        "args": [],
+        "type": {
+        "__typename": "__Type",
+        "kind": "NON_None",
+        "name": None,
+        "ofType": {
+            "__typename": "__Type",
+            "kind": "LIST",
+            "name": None,
+            "ofType": {
+            "kind": "NON_None",
+            "name": None
+            }
         }
         },
         "isDeprecated": False,
@@ -118,14 +311,16 @@ original_data = {
     ],
 }
 
-MASTER_TYPE_ID = "019482b0-0335-7f02-83e4-9a62f77b4afa"
+MASTER_TYPE_ID = "0194a6be-097a-7c48-a240-29b6542a88bf"
 
 # Mapování typů na jejich ID
 oftype_mapping = {
     "UUID": "01943a92-e483-7053-9483-2c16f2deb39c",
     "String": "019487b7-b92d-7a80-b1a6-4f40c9112954",
-    "UserGQLModel": "019487cf-65bd-724c-963a-d47215bb7486",
-    "DateTime": "019487d0-ac6b-7fff-aaae-c6eab327047e"
+    "UserGQLModel": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54",
+    "DateTime": "019487d0-ac6b-7fff-aaae-c6eab327047e",
+    "Int":"0194a6c5-06e5-7d17-9cb2-34ca335aec53",
+    "Boolean":"0194a6c8-02c7-7a4e-b960-b917b8427b87"
 
 }
 
@@ -155,6 +350,9 @@ new_data = transform_data(original_data["fields"])
 
 # Výstup
 for item in new_data:
+    oftype_id = item.get("oftype_id")
+    
+    #if oftype_id:
     print(
         "{\n    " + ",\n    ".join(f'\"{key}\": \"{value}\"' for key, value in item.items()) + "\n},"
     )

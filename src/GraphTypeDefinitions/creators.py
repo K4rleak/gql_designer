@@ -4,6 +4,9 @@ import inspect
 import typing
 import types
 import strawberry
+import uuid
+import datetime
+from .TypeNameResolver import TypeNameResolver
 
 from strawberry.tools import create_type as create_strawberry_type
 
@@ -82,6 +85,7 @@ async def loadFieldDefinition(*, context, typename, name):
 
     # ziskat navratovy typ pro field
     return_type = await type_loader.load(field_row.oftype_id)
+    #print(f"Loadfield definition.return_type: {return_type.kind}")
 
     # nahrat ty parametry, ktere patri k teto field
     params = await param_loader.filter_by(field_id=field_row.id)
@@ -96,8 +100,12 @@ async def loadFieldDefinition(*, context, typename, name):
     # usporadat to do dict a pouzit jako anotaci parametru
     param_annotations = {param_name: typing.ForwardRef(type_.name) for param_name, type_ in zip(params_.keys(), types)}
 
-    result = {**param_annotations, "return": typing.ForwardRef(return_type.name)}
-    # print(f"param_annotations: {result}")
+    TypeNameResolved=TypeNameResolver(return_type)
+    if isinstance(TypeNameResolved,str):
+        result = {**param_annotations, "return": typing.ForwardRef(TypeNameResolved)}
+    else:
+        result = {**param_annotations, "return": TypeNameResolved}
+    # print(f"typ: {TypeNameResolved}")
     return result
 
 
@@ -201,6 +209,9 @@ def redefine_function_signature(new_params, new_return_annotation):
             name: annotation for name, _, annotation in new_params if annotation is not None
         }
         if new_return_annotation is not None:
+            #if new_return_annotation.name
+            # func.__annotations__['return'] = "str"
+            #print(new_return_annotation.__forward_arg__)
             func.__annotations__['return'] = new_return_annotation
 
         # Create a new function with the updated signature
