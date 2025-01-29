@@ -223,7 +223,7 @@ async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) 
 
 @strawberry.mutation(description="")
 async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGenerationInput) -> typing.Optional[str]:
-    from .template import fields_template
+    from .template import model_template
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
@@ -238,6 +238,9 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
     for field,value in zip(fields,values):
         field.of_type = value
+
+
+    lazy_models=[]
 
     async def recursive(oftype_id,field):
         type_ = await type_loader.load(oftype_id)
@@ -260,6 +263,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
             return f"""typing.Optional[{type_name}]""", ""
 
         if type_.kind == "OBJECT":
+            lazy_models.append({"name": f"{type_.name}"})
             return f"""typing.Optional["{type_.name}"]""", f"""resolver=ScalarResolver["{type_.name}GQLModel"](fkey_field_name="{field.name}_id")"""
 
         if type_.kind == "LIST":
@@ -302,22 +306,34 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
     #     result = await recursive(field.of_type.id)  # Await the result
     #     print(result)
 
+   
     TypeNameResolved=TypeNameResolver(type_row)
+
     if isinstance(TypeNameResolved,str):
-        type_data = {
-            "fields": field_data,
-            "type_name": TypeNameResolved,
-            "table_name": type_row.__tablename__
-        }
+        pass
     else:
-        type_data = {
-            "fields": field_data,
-            "type_name": type(TypeNameResolved).__name__,
-            "table_name": type_row.__tablename__
-        }
+        TypeNameResolved= type(TypeNameResolved).__name__
+    
+    type_data = {
+    "fields": field_data,
+    "type_name": TypeNameResolved,
+    "table_name": type_row.__tablename__,
+    "lazy_models": lazy_models
+}
+    #     type_data = {
+    #         "fields": field_data,
+    #         "type_name": TypeNameResolved,
+    #         "table_name": type_row.__tablename__
+    #     }
+    # else:
+    #     type_data = {
+    #         "fields": field_data,
+    #         "type_name": type(TypeNameResolved).__name__,
+    #         "table_name": type_row.__tablename__
+    #     }
 
 
-    result = chevron.render(fields_template, type_data)
+    result = chevron.render(model_template, type_data)
     print(result)
     return result
 
