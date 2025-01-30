@@ -27,6 +27,7 @@ async def loadSchema(*, context):
             "name": t.name
         }
         for t in types
+        # if t.name is not None
     ]
     query_type = next(filter(lambda item: item["id"] == schema.query_type_id, type_array), None)
     mutation_type = next(filter(lambda item: item["id"] == schema.mutation_type_id, type_array), None)
@@ -36,12 +37,15 @@ async def loadSchema(*, context):
         "types": type_array
     }
 
-async def loadTypeDefinition(*, context, name):
+async def loadTypeDefinition(*, context, name, id=None):
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
 
-    dbrows = await type_loader.filter_by(name=name)
-    dbrow = next(dbrows, None)
+    if id:
+        dbrow=await type_loader.load(id)
+    else:
+        dbrows = await type_loader.filter_by(name=name)
+        dbrow = next(dbrows, None)
 
     type_definition = {
         "id": dbrow.id,
@@ -86,7 +90,9 @@ async def loadFieldDefinition(*, context, typename, name):
     # ziskat navratovy typ pro field
     return_type = await type_loader.load(field_row.oftype_id)
     #print(f"Loadfield definition.return_type: {return_type.kind}")
-
+    # if return_type.kind == "LIST":
+    #     inner_type = await type_loader.load(return_type.oftype_id)  # Získat vnitřní typ
+    #     print(f"Field: {name}, Inner Type: {inner_type.kind}, Inner Name: {getattr(inner_type, 'name', None)}", flush=True)
     # nahrat ty parametry, ktere patri k teto field
     params = await param_loader.filter_by(field_id=field_row.id)
     # ziskat nazvy a id typu parametru
@@ -109,14 +115,15 @@ async def loadFieldDefinition(*, context, typename, name):
     return result
 
 
-async def createType(*, context, name, typedef):
+async def createType(*, context, name, typedef=None):
     
     async def hello(self)-> str:
         return "hello"    
 
     loadedType = None # typedef
     if loadedType is None:
-        loadedType = await loadTypeDefinition(context=context, name=name)
+        id=None if typedef is None else typedef["id"]
+        loadedType = await loadTypeDefinition(context=context, name=name,id=id)
 
     fieldnames = [
         field["name"]
@@ -268,8 +275,9 @@ async def createSchema(context):
     mutationName = schemaDefinition["mutationType"]["name"]
 
     types = schemaDefinition["types"]
+
     typeIndex = {
-        t["name"]: await loadTypeDefinition(context=context, name=t["name"])
+        t["name"]: await loadTypeDefinition(context=context, name=t["name"], id=t["id"])
         for t in types
     }
     # print(list(typeIndex.keys()), flush=True)
@@ -282,10 +290,11 @@ async def createSchema(context):
     strawberryTypes = {
         name: await createType(context=context, name=name, typedef=typedef)
         for name, typedef in typeIndex.items() 
-        if (not name in [queryName, mutationName]) and (not name in strawberryInputs)
+        if (not name in [queryName, mutationName,None]) and (not name in strawberryInputs)
     }
     
     innerTypes = list(strawberryTypes.values())
+    innerTypes.append(uuid.UUID)
     # print(list(strawberryTypes.keys()), flush=True)
     strawberryTypes[queryName] = await createQuery(context=context, queryName=queryName, typedef=typeIndex[queryName])
     strawberryTypes[mutationName] = await createMutation(context=context, mutationName=mutationName, typedef=typeIndex[mutationName])

@@ -37,8 +37,15 @@
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         },
         {
+            "id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54",
+            "name": "UserGQLModel",
+            "kind": "OBJECT",
+            "description": "user",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
             "id": "01943a92-e483-7053-9483-2c16f2deb39c",
-            "name": "ListType",
+            "name": "ObjectList",
             "kind": "LIST",
             "description": "Typ vracející seznam objektů",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
@@ -50,20 +57,19 @@
             "kind": "SCALAR",
             "description": "uuid",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
-        },       {
-            "id": "0194abd1-c6a5-78f6-b218-194f57cca7b1",
-            "name": "ListTypeIds",
-            "kind": "LIST",
-            "description": "Typ vracející seznam objektů",
-            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
-            "oftype_id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2"
-        },
+        },       
         {
             "id": "019487b7-b92d-7a80-b1a6-4f40c9112954",
             "name": "String",
             "kind": "SCALAR",
             "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "0194abd1-c6a5-78f6-b218-194f57cca7b1",
+            "kind": "LIST",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
+            "oftype_id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2"
         },
         {
             "id": "0194a6c5-06e5-7d17-9cb2-34ca335aec53",
@@ -99,16 +105,16 @@
             "kind": "OBJECT",
             "description": "Classification at the end of semester",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
-        },
-        {
-            "id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54",
-            "name": "UserGQLModel",
-            "kind": "OBJECT",
-            "description": "user",
-            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
     "fields": [
+        {
+            "id": "0194b730-dfb7-778d-afbd-72ebf8255ca7",
+            "name": "name",
+            "description": "Name ",
+            "master_type_id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
         {
             "id": "272dc317-5bbf-461d-929d-7c43d95a7fae",
             "name": "by_id",
@@ -129,6 +135,13 @@
             "description": "field desc",
             "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
             "oftype_id": "0194a6be-097a-7c48-a240-29b6542a88bf"
+        },
+        {
+            "id": "0194b72e-4951-71b3-95b7-29df780168c7",
+            "name": "UserByID",
+            "description": "field desc",
+            "master_type_id": "82248ff4-1e54-4af4-9531-9ad126a04eaf",
+            "oftype_id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54"
         },
         {
             "id": "01943a97-c787-7be0-be0c-b1fcfe5e5ee8",
@@ -255,6 +268,13 @@
             "description": "Who made last change",
             "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
             "oftype_id": "0194abb8-7c37-7a38-a1c0-9fcbf33eae54"
+        },
+        {
+            "id": "0194b6e0-060e-7e04-801a-4d0d3dcac5eb",
+            "name": "reservations",
+            "description": "Intermediate entity linking the event and facility",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "01943a92-e483-7053-9483-2c16f2deb39c"
         },
         {
             "id": "0194abcd-e4c6-7667-ba4c-2de35e41c8cd",

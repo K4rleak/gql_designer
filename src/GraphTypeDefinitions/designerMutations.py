@@ -244,6 +244,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
     async def recursive(oftype_id,field):
         type_ = await type_loader.load(oftype_id)
+
         innerName = ""
         if type_.oftype_id:
             # Recursive call and unpacking the result
@@ -317,6 +318,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
     type_data = {
     "fields": field_data,
     "type_name": TypeNameResolved,
+    "type_description" : type_row.description,
     "table_name": type_row.__tablename__,
     "lazy_models": lazy_models
 }
@@ -334,7 +336,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
 
     result = chevron.render(model_template, type_data)
-    print(result)
+    #print(result)
     return result
 
 

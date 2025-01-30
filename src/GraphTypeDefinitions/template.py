@@ -31,6 +31,9 @@ from .BaseGQLModel import BaseGQLModel, IDType
 {{name}} = typing.Annotated["{{name}}", strawberry.lazy(".{{name}}")]
 {{/lazy_models}}
 
+@strawberry.federation.type(
+    keys=["id"], description="{{type_description}}"
+)
 class {{type_name}}GQLModel(BaseGQLModel):
     @classmethod
     def getLoader(cls, info: strawberry.types.Info):
