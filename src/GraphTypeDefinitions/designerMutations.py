@@ -245,19 +245,21 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
     async def recursive(oftype_id,field):
         type_ = await type_loader.load(oftype_id)
 
-        innerName = ""
-        if type_.oftype_id:
-            # Recursive call and unpacking the result
-            innerName, _ = await recursive(type_.oftype_id,field)
-        if type_.kind == "SCALAR":
-            #type_name=type(TypeNameResolver(type_)).__name__
-            type_map={
+        type_map={
             "String":"str",
             "DateTime": "datetime.datetime",
             "UUID":"IDType",
             "Boolean":"bool",
             "Int":"int"
         }
+
+        innerName = ""
+        if type_.oftype_id:
+            # Recursive call and unpacking the result
+            innerName, _ = await recursive(type_.oftype_id,field)
+        if type_.kind == "SCALAR":
+            #type_name=type(TypeNameResolver(type_)).__name__
+
             type_name=type_map.get(type_.name, None)
             
 
@@ -265,15 +267,21 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
         if type_.kind == "OBJECT":
             lazy_models.append({"name": f"{type_.name}"})
-            return f"""typing.Optional["{type_.name}"]""", f"""resolver=ScalarResolver["{type_.name}GQLModel"](fkey_field_name="{field.name}_id")"""
+            return f"""typing.Optional["{type_.name}"]""", f"""resolver=ScalarResolver["{type_.name}"](fkey_field_name="{field.name}_id")"""
 
         if type_.kind == "LIST":
             # Use the string innerName instead of the entire tuple
             ReturnTypeOfList = await type_loader.load(type_.oftype_id)
-            ReturnType = ReturnTypeOfList.name
-            #print(innerName)
-            innerName = innerName.replace("typing.Optional[", "").replace("]", "")
-            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{ReturnType}GQLModel"](fkey_field_name="{field.name}_id", whereType=None)"""
+            if ReturnTypeOfList.name in type_map:
+                ReturnType = (f"{ReturnTypeOfList.name}") 
+            else: 
+                ReturnType = (f"{ReturnTypeOfList.name}GQLModel")
+            innerName = innerName.replace("typing.Optional[\"", "").replace("\"]", "").replace("typing.Optional[", "").replace("]", "")
+            if innerName in type_map.values():
+                innerName 
+            else: 
+                innerName+="GQLModel"
+            return f"""typing.List["{innerName}"]""", f"""resolver=VectorResolver["{ReturnType}"](fkey_field_name="{field.name}_id", whereType=None)"""
         #master type mysto toho type.name
 
         if type_.kind == "NON_NULL":

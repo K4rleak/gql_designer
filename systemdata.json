@@ -96,7 +96,7 @@
         {
             "id": "0194a6be-097a-7c48-a240-29b6542a88bf",
             "kind": "OBJECT",
-            "name": "Facility",
+            "name": "FacilityGQLModel",
             "description": "Entity representing a Facility",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         },
