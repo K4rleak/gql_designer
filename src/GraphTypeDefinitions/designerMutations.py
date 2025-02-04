@@ -269,8 +269,11 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
         if type_.kind == "LIST":
             # Use the string innerName instead of the entire tuple
+            ReturnTypeOfList = await type_loader.load(type_.oftype_id)
+            ReturnType = ReturnTypeOfList.name
+            #print(innerName)
             innerName = innerName.replace("typing.Optional[", "").replace("]", "")
-            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{type_.name}GQLModel"](fkey_field_name="{type_.name}_id", whereType=None)"""
+            return f"typing.List[{innerName}]", f"""resolver=VectorResolver["{ReturnType}GQLModel"](fkey_field_name="{field.name}_id", whereType=None)"""
         #master type mysto toho type.name
 
         if type_.kind == "NON_NULL":
@@ -336,7 +339,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
 
     result = chevron.render(model_template, type_data)
-    #print(result)
+    print(result)
     return result
 
 

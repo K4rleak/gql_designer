@@ -27,7 +27,11 @@ from uoishelpers.resolvers import (
 
 from .BaseGQLModel import BaseGQLModel, IDType
 UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".UserGQLModel")]
+firsttype = typing.Annotated["firsttype", strawberry.lazy(".firsttype")]
 
+@strawberry.federation.type(
+    keys=["id"], description="Entity representing a Facility"
+)
 class FacilityGQLModel(BaseGQLModel):
     @classmethod
     def getLoader(cls, info: strawberry.types.Info):
@@ -119,11 +123,20 @@ class FacilityGQLModel(BaseGQLModel):
         resolver=ScalarResolver["UserGQLModelGQLModel"](fkey_field_name="changedby_id")
         )
 
+    reservations: typing.List["firsttype"] = strawberry.field(
+        default=None,
+        description="Intermediate entity linking the event and facility",
+        permission_classes=[
+            OnlyForAuthentized
+        ],
+        resolver=VectorResolver["firsttypeGQLModel"](fkey_field_name="reservations_id", whereType=None)
+        )
+
     externalIds: typing.List[IDType] = strawberry.field(
         default=None,
         description="All related external ids",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=VectorResolver["ListTypeIdsGQLModel"](fkey_field_name="ListTypeIds_id", whereType=None)
+        resolver=VectorResolver["UUIDGQLModel"](fkey_field_name="externalIds_id", whereType=None)
         )

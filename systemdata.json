@@ -67,6 +67,7 @@
         },
         {
             "id": "0194abd1-c6a5-78f6-b218-194f57cca7b1",
+            "name":"IdList",
             "kind": "LIST",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8",
             "oftype_id": "019482b4-f752-7b64-9b2c-5f3c14faf7e2"
