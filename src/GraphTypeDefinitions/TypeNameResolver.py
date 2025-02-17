@@ -1,5 +1,7 @@
 import uuid
 import datetime
+import strawberry
+from typing import Annotated,ForwardRef
 
 def TypeNameResolver(typemodel):  
     if typemodel.kind=="SCALAR":
@@ -16,4 +18,7 @@ def TypeNameResolver(typemodel):
         assert typemodel_type is not None,f"Nemam typ v mapovaci{typemodel.name}"
         return typemodel_type
     else:
-        return typemodel.name
+        print(f"Typenamresolver return ForwardRef_{typemodel.name},{typemodel.id}")
+        #return Annotated[typemodel.name,strawberry.lazy(".empty")]
+        return ForwardRef(typemodel.name)
+        # return typemodel.name

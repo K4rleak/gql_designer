@@ -106,9 +106,23 @@
             "kind": "OBJECT",
             "description": "Classification at the end of semester",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "0194f123-6528-7c4d-be49-6669199d3c29",
+            "name": "Group",
+            "kind": "OBJECT",
+            "description": "Classification at the end of semester",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
     "fields": [
+        {
+            "id": "0194f131-1ab7-7cd5-882f-e760785a56cb",
+            "name": "name",
+            "description": "Name ",
+            "master_type_id": "0194f123-6528-7c4d-be49-6669199d3c29",
+            "oftype_id": "019487b7-b92d-7a80-b1a6-4f40c9112954"
+        },
         {
             "id": "0194b730-dfb7-778d-afbd-72ebf8255ca7",
             "name": "name",
@@ -283,6 +297,13 @@
             "description": "All related external ids",
             "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
             "oftype_id": "0194abd1-c6a5-78f6-b218-194f57cca7b1"
+        },
+        {
+            "id": "0194f120-99ee-78d3-8464-1048d4fccb34",
+            "name": "group",
+            "description": "Facility management group",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "0194f123-6528-7c4d-be49-6669199d3c29"
         }
     ],
     "args": [

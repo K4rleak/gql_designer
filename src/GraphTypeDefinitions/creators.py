@@ -37,6 +37,10 @@ async def loadSchema(*, context):
         "types": type_array
     }
 
+strawberry_type_index={"0194f141-ddb5-778e-adec-9ff2c9f99dae":{"state":"finished","type":str}}
+
+
+
 async def loadTypeDefinition(*, context, name, id=None):
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
@@ -88,7 +92,11 @@ async def loadFieldDefinition(*, context, typename, name):
     assert field_row is not None
 
     # ziskat navratovy typ pro field
-    return_type = await type_loader.load(field_row.oftype_id)
+    if field_row.oftype_id in strawberry_type_index:
+        return_type = await type_loader.load(field_row.oftype_id)
+    else:
+        pass
+        #await create_type
     #print(f"Loadfield definition.return_type: {return_type.kind}")
     # if return_type.kind == "LIST":
     #     inner_type = await type_loader.load(return_type.oftype_id)  # Získat vnitřní typ
@@ -116,7 +124,10 @@ async def loadFieldDefinition(*, context, typename, name):
 
 
 async def createType(*, context, name, typedef=None):
-    
+    registered = strawberry_type_index.get(typedef["id"],None)
+    if registered is not None:
+        assert False,"Nalezen cyklus"
+    strawberry_type_index[typedef["id"]] = {"status":"creating"}
     async def hello(self)-> str:
         return "hello"    
 
@@ -155,6 +166,13 @@ async def createType(*, context, name, typedef=None):
     result = create_strawberry_type(name=name, fields=strawberry_fields, is_input=loadedType["kind"]=="INPUT_OBJECT", description=loadedType.get("description", None))
     this = sys.modules[__name__]
     setattr(this, result.__name__, result)
+    registered = strawberry_type_index.get(typedef["id"],None)
+    if registered is None:
+        registered={}
+        strawberry_type_index[typedef["id"]]=registered
+    registered["state"]="finished"
+    registered["type"]=result
+
     return 
 
 async def createQuery(*, context, queryName, typedef):

@@ -1,142 +1,31 @@
-import asyncio
-import dataclasses
-import typing
-import strawberry
+Typenamresolver return ForwardRef_IdList,0194abd1-c6a5-78f6-b218-194f57cca7b1
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_AcClassificationType,019482b0-0335-7f02-83e4-9a62f77b4afa
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_firsttype,4ad7334d-13f5-495f-9b71-6e675406e2c2
+Typenamresolver return ForwardRef_FacilityGQLModel,0194a6be-097a-7c48-a240-29b6542a88bf
+createQuery Query >> annotations: [{'id': ForwardRef('strproxy'), 'id2': ForwardRef('strproxy'), 'return': ForwardRef('firsttype')}, {'return': ForwardRef('AcClassificationType')}, {'return': ForwardRef('FacilityGQLModel')}, {'return': ForwardRef('UserGQLModel')}, {'return': ForwardRef('ObjectList')}]
+Typenamresolver return ForwardRef_FacilityGQLModel,0194a6be-097a-7c48-a240-29b6542a88bf
 
-from uoishelpers.gqlpermissions import (
-    OnlyForAuthentized,
-    SimpleInsertPermission,
-    SimpleUpdatePermission,
-    SimpleDeletePermission
-)
-from uoishelpers.resolvers import (
-    getLoadersFromInfo,
-    createInputs,
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
+Typenamresolver return ForwardRef_IdList,0194abd1-c6a5-78f6-b218-194f57cca7b1
+Typenamresolver return ForwardRef_Group,0194f123-6528-7c4d-be49-6669199d3c29
+Typenamresolver return ForwardRef_AcClassificationType,019482b0-0335-7f02-83e4-9a62f77b4afa
+Typenamresolver return ForwardRef_firsttype,4ad7334d-13f5-495f-9b71-6e675406e2c2
+Typenamresolver return ForwardRef_FacilityGQLModel,0194a6be-097a-7c48-a240-29b6542a88bf
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
+createQuery Query >> annotations: [{'id': ForwardRef('strproxy'), 'id2': ForwardRef('strproxy'), 'return': ForwardRef('firsttype')}, {'return': ForwardRef('AcClassificationType')}, {'return': ForwardRef('FacilityGQLModel')}, {'return': ForwardRef('UserGQLModel')}, {'return': ForwardRef('ObjectList')}]
 
-    InsertError,
-    Insert,
-    UpdateError,
-    Update,
-    DeleteError,
-    Delete,
-
-    PageResolver,
-    VectorResolver,
-    ScalarResolver
-)
-
-from .BaseGQLModel import BaseGQLModel, IDType
-UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".UserGQLModel")]
-firsttype = typing.Annotated["firsttype", strawberry.lazy(".firsttype")]
-
-@strawberry.federation.type(
-    keys=["id"], description="Entity representing a Facility"
-)
-class FacilityGQLModel(BaseGQLModel):
-    @classmethod
-    def getLoader(cls, info: strawberry.types.Info):
-       return getLoadersFromInfo(info).types
-
-    id: typing.Optional[IDType] = strawberry.field(
-        default=None,
-        description="Entity primary key",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    name: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="Name ",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    nameEn: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="English name",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    lastchange: typing.Optional[datetime.datetime] = strawberry.field(
-        default=None,
-        description="Time of last update",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    created: typing.Optional[datetime.datetime] = strawberry.field(
-        default=None,
-        description="Time of entity introduction",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    label: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="Facility full name assigned by an administrator",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    address: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="Facility address",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    valid: typing.Optional[bool] = strawberry.field(
-        default=None,
-        description="is the facility still valid",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    capacity: typing.Optional[int] = strawberry.field(
-        default=None,
-        description="Facility's capacity",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    geometry: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="Facility geometry (SVG)",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    geolocation: typing.Optional[str] = strawberry.field(
-        default=None,
-        description="Facility geo address (WGS84+zoom)",
-        permission_classes=[
-            OnlyForAuthentized
-        ]        )
-
-    changedby: typing.Optional["UserGQLModel"] = strawberry.field(
-        default=None,
-        description="Who made last change",
-        permission_classes=[
-            OnlyForAuthentized
-        ],
-        resolver=ScalarResolver["UserGQLModelGQLModel"](fkey_field_name="changedby_id")
-        )
-
-    reservations: typing.List["firsttype"] = strawberry.field(
-        default=None,
-        description="Intermediate entity linking the event and facility",
-        permission_classes=[
-            OnlyForAuthentized
-        ],
-        resolver=VectorResolver["firsttypeGQLModel"](fkey_field_name="reservations_id", whereType=None)
-        )
-
-    externalIds: typing.List[IDType] = strawberry.field(
-        default=None,
-        description="All related external ids",
-        permission_classes=[
-            OnlyForAuthentized
-        ],
-        resolver=VectorResolver["UUIDGQLModel"](fkey_field_name="externalIds_id", whereType=None)
-        )
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_IdList,0194abd1-c6a5-78f6-b218-194f57cca7b1
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
+Typenamresolver return ForwardRef_Group,0194f123-6528-7c4d-be49-6669199d3c29
+Typenamresolver return ForwardRef_AcClassificationType,019482b0-0335-7f02-83e4-9a62f77b4afa
+Typenamresolver return ForwardRef_firsttype,4ad7334d-13f5-495f-9b71-6e675406e2c2
+Typenamresolver return ForwardRef_ObjectList,01943a92-e483-7053-9483-2c16f2deb39c
+Typenamresolver return ForwardRef_FacilityGQLModel,0194a6be-097a-7c48-a240-29b6542a88bf
+Typenamresolver return ForwardRef_UserGQLModel,0194abb8-7c37-7a38-a1c0-9fcbf33eae54
