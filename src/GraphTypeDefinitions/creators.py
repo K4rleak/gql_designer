@@ -95,8 +95,15 @@ async def loadFieldDefinition(*, context, typename, name):
     if field_row.oftype_id in strawberry_type_index:
         return_type = await type_loader.load(field_row.oftype_id)
     else:
-        pass
-        #await create_type
+        # print("Field name u chybejiciho:",field_row.name)
+        dbrows = await type_loader.filter_by(id=field_row.oftype_id)
+        dbrow = next(dbrows, None)
+        # print("Type name chybejiciho:",dbrow.name)
+
+        typedef = await loadTypeDefinition(context=context, name=dbrow.name, id=dbrow.id)
+        await createType(context=context, name=dbrow.name, typedef=typedef)
+        #print("Vytvoreno uspesne: ",strawberry_type_index)
+        return_type = await type_loader.load(field_row.oftype_id)
     #print(f"Loadfield definition.return_type: {return_type.kind}")
     # if return_type.kind == "LIST":
     #     inner_type = await type_loader.load(return_type.oftype_id)  # Získat vnitřní typ
@@ -127,7 +134,7 @@ async def createType(*, context, name, typedef=None):
     registered = strawberry_type_index.get(typedef["id"],None)
     if registered is not None:
         assert False,"Nalezen cyklus"
-    strawberry_type_index[typedef["id"]] = {"status":"creating"}
+    strawberry_type_index[str(typedef["id"])] = {"state":"creating"}
     async def hello(self)-> str:
         return "hello"    
 
@@ -169,7 +176,7 @@ async def createType(*, context, name, typedef=None):
     registered = strawberry_type_index.get(typedef["id"],None)
     if registered is None:
         registered={}
-        strawberry_type_index[typedef["id"]]=registered
+        strawberry_type_index[str(typedef["id"])]=registered
     registered["state"]="finished"
     registered["type"]=result
 

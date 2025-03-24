@@ -113,6 +113,13 @@
             "kind": "OBJECT",
             "description": "Classification at the end of semester",
             "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
+        },
+        {
+            "id": "019513bc-51ad-7988-b50b-fe4684349099",
+            "kind": "OBJECT",
+            "name": "PlannedLessonGQLModel",
+            "description": "Entity representing a planned lesson for timetable creation",
+            "schema_id": "75e26f82-db96-46fd-87ad-04cfa7d1e7f8"
         }
     ],
     "fields": [
@@ -304,6 +311,13 @@
             "description": "Facility management group",
             "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
             "oftype_id": "0194f123-6528-7c4d-be49-6669199d3c29"
+        },
+        {
+            "id": "019513bc-e366-7156-a878-f47f1d770014",
+            "name": "plannedLessons",
+            "description": "planned items",
+            "master_type_id": "0194a6be-097a-7c48-a240-29b6542a88bf",
+            "oftype_id": "019513bc-51ad-7988-b50b-fe4684349099"
         }
     ],
     "args": [

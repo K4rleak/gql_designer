@@ -17,7 +17,7 @@ for item in types:
     filtered_item = {key: value for key, value in item.items() if key in keys_to_print and value is not None}
     
     # Print the filtered item
-    if "FacilityGQLModel" in filtered_item.values():
+    if "PlannedLessonGQLModel" in filtered_item.values():
         print(
             "{\n    " +
             f'"id": "{new_id}",' + "\n    " +

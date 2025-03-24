@@ -18,7 +18,7 @@ def TypeNameResolver(typemodel):
         assert typemodel_type is not None,f"Nemam typ v mapovaci{typemodel.name}"
         return typemodel_type
     else:
-        print(f"Typenamresolver return ForwardRef_{typemodel.name},{typemodel.id}")
+        #print(f"Typenamresolver return ForwardRef_{typemodel.name},{typemodel.id}")
         #return Annotated[typemodel.name,strawberry.lazy(".empty")]
         return ForwardRef(typemodel.name)
         # return typemodel.name
