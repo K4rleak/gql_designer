@@ -8,8 +8,24 @@
         body { font-family: Arial, sans-serif; padding: 20px; }
         h1 { color: #333; }
         ul { list-style: none; padding: 0; }
-        li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-radius: 5px; cursor: pointer; }
+        li { 
+            background: #f4f4f4; 
+            margin: 5px 0; 
+            padding: 10px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            position: relative;
+        }
         li:hover { background: #ddd; }
+        .mutation-result {
+            margin-top: 5px;
+            padding: 5px;
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            font-size: 0.9em;
+            display: none;
+            white-space: pre-wrap; /* Zachová formátování JSONu */
+        }
     </style>
 </head>
 <body>
@@ -34,8 +50,18 @@
                 if (data.types.length > 0) {
                     data.types.forEach(type => {
                         const li = document.createElement('li');
-                        li.textContent = type.name;
-                        li.onclick = () => sendGraphQLMutation(type.id, type.name); // Kliknutí = mutace
+                        li.textContent = `${type.name} (ID: ${type.id})`;
+
+                        // Výsledek mutace - schovaný div
+                        const resultDiv = document.createElement('div');
+                        resultDiv.className = 'mutation-result';
+                        li.appendChild(resultDiv);
+
+                        li.onclick = () => {
+                            sendGraphQLMutation(type.id, resultDiv, li);
+                            li.onclick = null; // Odebrání onclick, aby se mutace nespustila znovu
+                            li.style.cursor = "default"; // Změní kurzor na normální text
+                        };
                         typesList.appendChild(li);
                     });
                 } else {
@@ -48,34 +74,45 @@
         }
 
         // Funkce pro odeslání GraphQL mutace
-        async function sendGraphQLMutation(typeId) {
-            const gqlMutation = {
-                query: `
-                    mutation GenCode {
-                        generatePythonCode(type_: {id: "${typeId}"})
-                    }
-                `
-            };
-
-            try {
-                const response = await fetch('/gql', {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(gqlMutation)
-                });
-
-                const result = await response.json();
-                console.log('Výsledek mutace:', result);
-                //alert(`Mutace spuštěna pro ID: ${typeId}\nOdpověď: ${JSON.stringify(result)}`);
-                alert(`Mutace spuštěna pro ID: ${typeId}\nOdpověď: ${JSON.stringify(result, null, 2)}`);
-            } catch (error) {
-                console.error('Chyba při volání GraphQL mutace:', error);
-                alert('Chyba při volání mutace');
+        async function sendGraphQLMutation(typeId, resultDiv) {
+    const gqlMutation = {
+        query: `
+            mutation GenCode {
+                generatePythonCode(type_: {id: "${typeId}"})
             }
-        }
+        `
+    };
+
+    try {
+        const response = await fetch('/gql', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(gqlMutation)
+        });
+
+        const result = await response.json();
+        console.log('Výsledek mutace:', result);
+
+        // Nahrazení \n za <br> pro správné zalomení
+        const formattedResult = JSON.stringify(result, null, 2)
+    .replace(/\\n/g, '<br>')   // Oprava zalomení řádků
+    .replace(/\\"/g, '"');      // Oprava escapovaných uvozovek
+
+        // Aktualizace a zobrazení výsledku pod typem
+        resultDiv.innerHTML = `Výsledek:<br><pre>${formattedResult}</pre>`;
+        resultDiv.style.display = 'block';
+
+    } catch (error) {
+        console.error('Chyba při volání GraphQL mutace:', error);
+        resultDiv.innerHTML = '<span style="color:red;">Chyba při volání mutace</span>';
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#ffebee'; // Červené pozadí při chybě
+        resultDiv.style.borderLeft = '4px solid #f44336';
+    }
+}
 
         // Načíst data při načtení stránky
         window.onload = loadTypes;
