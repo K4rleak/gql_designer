@@ -92,7 +92,7 @@ async def loadFieldDefinition(*, context, typename, name):
     assert field_row is not None
 
     # ziskat navratovy typ pro field
-    if field_row.oftype_id in strawberry_type_index:
+    if str(field_row.oftype_id) in strawberry_type_index:
         return_type = await type_loader.load(field_row.oftype_id)
     else:
         # print("Field name u chybejiciho:",field_row.name)
@@ -133,6 +133,8 @@ async def loadFieldDefinition(*, context, typename, name):
 async def createType(*, context, name, typedef=None):
     registered = strawberry_type_index.get(typedef["id"],None)
     if registered is not None:
+        #typeref
+        #return strawberry.LazyType(lambda: registered["type"], name)
         assert False,"Nalezen cyklus"
     strawberry_type_index[str(typedef["id"])] = {"state":"creating"}
     async def hello(self)-> str:
@@ -179,7 +181,6 @@ async def createType(*, context, name, typedef=None):
         strawberry_type_index[str(typedef["id"])]=registered
     registered["state"]="finished"
     registered["type"]=result
-
     return 
 
 async def createQuery(*, context, queryName, typedef):

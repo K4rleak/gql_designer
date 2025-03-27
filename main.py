@@ -12,7 +12,8 @@ from contextlib import asynccontextmanager
 from src.DBDefinitions import ComposeConnectionString, startEngine
 from src.GraphTypeDefinitions import createSchema
 from src.SchemaLoad import loadSchema
-from src.Dataloaders import createLoadersContext
+from src.Dataloaders import createLoadersContext, getLoadersFromContext
+
 
 def singleCall(asyncFunc):
     """Dekorator, ktery dovoli, aby dekorovana funkce byla volana (vycislena) jen jednou. Navratova hodnota je zapamatovana a pri dalsich volanich vracena.
@@ -109,6 +110,30 @@ async def graphiql():
 async def graphiql():
     realpath = os.path.realpath("./voyager.html")
     return realpath
+
+@app.get("/designer", response_class=FileResponse)
+async def graphiql():
+    realpath = os.path.realpath("./designer.html")
+    return realpath
+
+@app.post("/designer", response_class=JSONResponse)
+async def designer_types(request: Request):
+    """Vrátí seznam typů z tabulky `types` včetně jejich ID."""
+    
+    # Načtení session a kontextu
+    sessionMaker = await RunOnceAndReturnSessionMaker()
+    context = createLoadersContext(sessionMaker)
+
+    # Získání loaderu pro `TypeModel`
+    type_loader = getLoadersFromContext(context=context).TypeModel
+
+    # Načtení všech typů z tabulky
+    dbrows = await type_loader.filter_by()
+    
+    # Převedení na seznam objektů {id, name}
+    types_list = [{"id": row.id, "name": row.name} for row in dbrows]
+
+    return {"types": types_list}
 
 
 logger = logging.getLogger()

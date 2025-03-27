@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designer - Types</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        ul { list-style: none; padding: 0; }
+        li { background: #f4f4f4; margin: 5px 0; padding: 10px; border-radius: 5px; cursor: pointer; }
+        li:hover { background: #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Seznam Typů</h1>
+    <ul id="types-list">
+        <li>Načítání...</li>
+    </ul>
+
+    <script>
+        // Funkce pro načtení typů z endpointu /designer
+        async function loadTypes() {
+            try {
+                const response = await fetch('/designer', {
+                    method: 'POST',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                const data = await response.json();
+                const typesList = document.getElementById('types-list');
+                typesList.innerHTML = ''; // Vymazání placeholderu
+
+                if (data.types.length > 0) {
+                    data.types.forEach(type => {
+                        const li = document.createElement('li');
+                        li.textContent = type.name;
+                        li.onclick = () => sendGraphQLMutation(type.id, type.name); // Kliknutí = mutace
+                        typesList.appendChild(li);
+                    });
+                } else {
+                    typesList.innerHTML = '<li>Žádné typy nebyly nalezeny.</li>';
+                }
+            } catch (error) {
+                console.error('Chyba při načítání typů:', error);
+                document.getElementById('types-list').innerHTML = '<li>Chyba při načítání dat.</li>';
+            }
+        }
+
+        // Funkce pro odeslání GraphQL mutace
+        async function sendGraphQLMutation(typeId) {
+            const gqlMutation = {
+                query: `
+                    mutation GenCode {
+                        generatePythonCode(type_: {id: "${typeId}"})
+                    }
+                `
+            };
+
+            try {
+                const response = await fetch('/gql', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(gqlMutation)
+                });
+
+                const result = await response.json();
+                console.log('Výsledek mutace:', result);
+                //alert(`Mutace spuštěna pro ID: ${typeId}\nOdpověď: ${JSON.stringify(result)}`);
+                alert(`Mutace spuštěna pro ID: ${typeId}\nOdpověď: ${JSON.stringify(result, null, 2)}`);
+            } catch (error) {
+                console.error('Chyba při volání GraphQL mutace:', error);
+                alert('Chyba při volání mutace');
+            }
+        }
+
+        // Načíst data při načtení stránky
+        window.onload = loadTypes;
+    </script>
+</body>
+</html>
