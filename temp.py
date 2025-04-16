@@ -5,19 +5,19 @@ import strawberry
 
 from uoishelpers.gqlpermissions import (
     OnlyForAuthentized,
-    SimpleInsertPermission, 
-    SimpleUpdatePermission, 
+    SimpleInsertPermission,
+    SimpleUpdatePermission,
     SimpleDeletePermission
-)    
+)
 from uoishelpers.resolvers import (
-    getLoadersFromInfo, 
+    getLoadersFromInfo,
     createInputs,
 
-    InsertError, 
-    Insert, 
-    UpdateError, 
-    Update, 
-    DeleteError, 
+    InsertError,
+    Insert,
+    UpdateError,
+    Update,
+    DeleteError,
     Delete,
 
     PageResolver,
@@ -26,13 +26,13 @@ from uoishelpers.resolvers import (
 )
 
 from .BaseGQLModel import BaseGQLModel, IDType
-UserGQLModel = typing.Annotated[\"UserGQLModel\", strawberry.lazy(\".UserGQLModel\")]
-firsttype = typing.Annotated[\"firsttype\", strawberry.lazy(\".firsttype\")]
-Group = typing.Annotated[\"Group\", strawberry.lazy(\".Group\")]
-PlannedLessonGQLModel = typing.Annotated[\"PlannedLessonGQLModel\", strawberry.lazy(\".PlannedLessonGQLModel\")]
+UserGQLModel = typing.Annotated["UserGQLModel", strawberry.lazy(".UserGQLModel")]
+firsttype = typing.Annotated["firsttype", strawberry.lazy(".firsttype")]
+Group = typing.Annotated["Group", strawberry.lazy(".Group")]
+PlannedLessonGQLModel = typing.Annotated["PlannedLessonGQLModel", strawberry.lazy(".PlannedLessonGQLModel")]
 
 @strawberry.federation.type(
-    keys=[\"id\"], description=\"Entity representing a Facility\"
+    keys=["id"], description="Entity representing a Facility"
 )
 class ForwardRefGQLModel(BaseGQLModel):
     @classmethod
@@ -41,122 +41,122 @@ class ForwardRefGQLModel(BaseGQLModel):
 
     id: typing.Optional[IDType] = strawberry.field(
         default=None,
-        description=\"Entity primary key\",
+        description="Entity primary key",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     name: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"Name \",
+        description="Name ",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     nameEn: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"English name\",
+        description="English name",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     lastchange: typing.Optional[datetime.datetime] = strawberry.field(
         default=None,
-        description=\"Time of last update\",
+        description="Time of last update",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     created: typing.Optional[datetime.datetime] = strawberry.field(
         default=None,
-        description=\"Time of entity introduction\",
+        description="Time of entity introduction",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     label: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"Facility full name assigned by an administrator\",
+        description="Facility full name assigned by an administrator",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     address: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"Facility address\",
+        description="Facility address",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     valid: typing.Optional[bool] = strawberry.field(
         default=None,
-        description=\"is the facility still valid\",
+        description="is the facility still valid",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     capacity: typing.Optional[int] = strawberry.field(
         default=None,
-        description=\"Facility's capacity\",
+        description="Facility's capacity",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     geometry: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"Facility geometry (SVG)\",
+        description="Facility geometry (SVG)",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
     geolocation: typing.Optional[str] = strawberry.field(
         default=None,
-        description=\"Facility geo address (WGS84+zoom)\",
+        description="Facility geo address (WGS84+zoom)",
         permission_classes=[
             OnlyForAuthentized
         ]        )
 
-    changedby: typing.Optional[\"UserGQLModel\"] = strawberry.field(
+    changedby: typing.Optional["UserGQLModel"] = strawberry.field(
         default=None,
-        description=\"Who made last change\",
+        description="Who made last change",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=ScalarResolver[\"UserGQLModel\"](fkey_field_name=\"changedby_id\")
+        resolver=ScalarResolver["UserGQLModel"](fkey_field_name="changedby_id")
         )
 
-    reservations: typing.List[\"firsttypeGQLModel\"] = strawberry.field(
+    reservations: typing.List["firsttypeGQLModel"] = strawberry.field(
         default=None,
-        description=\"Intermediate entity linking the event and facility\",
+        description="Intermediate entity linking the event and facility",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=VectorResolver[\"firsttypeGQLModel\"](fkey_field_name=\"reservations_id\", whereType=None)
+        resolver=VectorResolver["firsttypeGQLModel"](fkey_field_name="reservations_id", whereType=None)   
         )
 
-    externalIds: typing.List[\"IDType\"] = strawberry.field(
+    externalIds: typing.List["IDType"] = strawberry.field(
         default=None,
-        description=\"All related external ids\",
+        description="All related external ids",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=VectorResolver[\"UUID\"](fkey_field_name=\"externalIds_id\", whereType=None)
+        resolver=VectorResolver["UUID"](fkey_field_name="externalIds_id", whereType=None)
         )
 
-    group: typing.Optional[\"Group\"] = strawberry.field(
+    group: typing.Optional["Group"] = strawberry.field(
         default=None,
-        description=\"Facility management group\",
+        description="Facility management group",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=ScalarResolver[\"Group\"](fkey_field_name=\"group_id\")
+        resolver=ScalarResolver["Group"](fkey_field_name="group_id")
         )
 
-    plannedLessons: typing.Optional[\"PlannedLessonGQLModel\"] = strawberry.field(
+    plannedLessons: typing.Optional["PlannedLessonGQLModel"] = strawberry.field(
         default=None,
-        description=\"planned items\",
+        description="planned items",
         permission_classes=[
             OnlyForAuthentized
         ],
-        resolver=ScalarResolver[\"PlannedLessonGQLModel\"](fkey_field_name=\"plannedLessons_id\")
+        resolver=ScalarResolver["PlannedLessonGQLModel"](fkey_field_name="plannedLessons_id")
         )
