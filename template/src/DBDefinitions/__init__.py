@@ -2,6 +2,7 @@ import sqlalchemy
 
         
 from .Base import BaseModel
+from .TemplateModel import TemplateModel
 
 #(priklad)from .FieldModel import FieldModel
 

@@ -5,6 +5,3 @@ class Query:
     from .template import (
         template_page
     )
-    from .FacilityGQLModel import (
-        facility_page
-    )

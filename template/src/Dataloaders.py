@@ -4,6 +4,7 @@ import uuid
 
 from src.DBDefinitions import (
     BaseModel,
+    TypeModel,
     # UserModel,
     # MembershipModel,
     # GroupModel,

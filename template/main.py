@@ -11,7 +11,7 @@ from strawberry.fastapi import GraphQLRouter
 import logging
 import logging.handlers
 
-from src.GraphTypeDefinitions import schema
+from template.src.GraphTypeDefinitions import schema
 from src.DBDefinitions import startEngine, ComposeConnectionString
 from src.DBFeeder import initDB
 
