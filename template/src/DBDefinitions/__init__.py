@@ -49,6 +49,7 @@ async def startEngine(connectionstring=None, makeDrop=False, makeUp=True) -> Asy
     async_sessionMaker = sessionmaker(
         asyncEngine, expire_on_commit=False, class_=AsyncSession
     )
+    print("Starting with template")
     return async_sessionMaker
 
 
@@ -61,7 +62,7 @@ def ComposeConnectionString():
     """
     user = os.environ.get("POSTGRES_USER", "postgres")
     password = os.environ.get("POSTGRES_PASSWORD", "example")
-    database = os.environ.get("POSTGRES_DB", "designer")
+    database = os.environ.get("POSTGRES_DB", "data")#udelat dalsi treba Templates
     hostWithPort = os.environ.get("POSTGRES_HOST", "localhost:5432")
 
     driver = "postgresql+asyncpg"  # "postgresql+psycopg2"
