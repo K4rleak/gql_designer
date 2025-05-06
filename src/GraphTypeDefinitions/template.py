@@ -53,3 +53,16 @@ class {{type_name}}GQLModel(BaseGQLModel):
 
 
 """
+
+db_model_template = '''import sqlalchemy
+from sqlalchemy import Column, String, Integer, DateTime, Boolean, ForeignKey
+from sqlalchemy.orm import relationship
+from .Base import BaseModel
+
+class {class_name}(BaseModel):
+    """{description}"""
+    
+    __tablename__ = "{tablename}"
+
+{fields}
+'''

@@ -9,6 +9,7 @@ import chevron
 from uoishelpers.resolvers import Insert, InsertError, Update, UpdateError, Delete, DeleteError
 from ..Dataloaders import getLoadersFromContext
 from .TypeNameResolver import TypeNameResolver
+from .db_model_creator import create_db_model
 
 @strawberry.mutation(description="")
 async def create_type(self, name: str) -> bool:
@@ -224,6 +225,7 @@ async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) 
 @strawberry.mutation(description="")
 async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGenerationInput) -> typing.Optional[str]:
     from .template import model_template
+    await create_db_model(info,type_)
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
@@ -347,7 +349,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
 
     result = chevron.render(model_template, type_data)
-    print(result)
+    #print(result)
     return result
 
 
