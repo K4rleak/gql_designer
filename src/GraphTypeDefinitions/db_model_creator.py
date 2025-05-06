@@ -25,12 +25,14 @@ async def create_db_model(info: strawberry.types.Info,type_: CodeGenerationInput
 
     type_row = await type_loader.load(type_.id)
     fields = await field_loader.filter_by(master_type_id=type_.id)
-    fields = list(fields)
-
+    fields = [*fields]
     type_row.fields = fields
 
     futures = (type_loader.load(field.oftype_id) for field in fields)
-    types_of_fields = await asyncio.gather(*futures)
+    values = await asyncio.gather(*futures)
+
+    for field,value in zip(fields,values):
+        field.of_type = value
 
     type_map = {
         "String": "String",
@@ -40,15 +42,15 @@ async def create_db_model(info: strawberry.types.Info,type_: CodeGenerationInput
         "Int": "Integer"
     }
 
-    field_lines = []
-    for field, of_type in zip(fields, types_of_fields):
-        # Default type
-        column_type = type_map.get(of_type.name, "String")
-        nullable = "True" if field.nullable else "False"
-        fk = f", ForeignKey('{of_type.name.lower()}s.id')" if of_type.kind == "OBJECT" else ""
+    # field_lines = []
+    # for field, of_type in zip(fields, types_of_fields):
+    #     # Default type
+    #     column_type = type_map.get(of_type.name, "String")
+    #     nullable = "True" if field.nullable else "False"
+    #     fk = f", ForeignKey('{of_type.name.lower()}s.id')" if of_type.kind == "OBJECT" else ""
 
-        line = f'    {field.name} = Column({column_type}{fk}, nullable={nullable}, comment="{field.description}")'
-        field_lines.append(line)
+    #     line = f'    {field.name} = Column({column_type}{fk}, nullable={nullable}, comment="{field.description}")'
+    #     field_lines.append(line)
 
     # Template variables
     class_name = f"{type_row.name}Model"
@@ -59,6 +61,6 @@ async def create_db_model(info: strawberry.types.Info,type_: CodeGenerationInput
         class_name=class_name,
         tablename=tablename,
         description=description,
-        fields="\n".join(field_lines)
     )
+    print(field_lines)
     print(model_str)
