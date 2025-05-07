@@ -225,7 +225,6 @@ async def type_update(self, info: strawberry.types.Info, type: TypeUpdateModel) 
 @strawberry.mutation(description="")
 async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGenerationInput) -> typing.Optional[str]:
     from .template import model_template
-    await create_db_model(info,type_)
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
@@ -240,6 +239,10 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
 
     for field,value in zip(fields,values):
         field.of_type = value
+
+    #db_model_str = await create_db_model(info,type_.id)
+
+
 
 
     lazy_models=[]

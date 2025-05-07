@@ -24,7 +24,10 @@
             border-left: 4px solid #4caf50;
             font-size: 0.9em;
             display: none;
-            white-space: pre-wrap; /* Zachová formátování JSONu */
+            white-space: pre-wrap;
+        }
+        .mutation-result button {
+            margin-top: 5px;
         }
     </style>
 </head>
@@ -52,15 +55,14 @@
                         const li = document.createElement('li');
                         li.textContent = `${type.name} (ID: ${type.id})`;
 
-                        // Výsledek mutace - schovaný div
                         const resultDiv = document.createElement('div');
                         resultDiv.className = 'mutation-result';
                         li.appendChild(resultDiv);
 
                         li.onclick = () => {
                             sendGraphQLMutation(type.id, resultDiv, li);
-                            li.onclick = null; // Odebrání onclick, aby se mutace nespustila znovu
-                            li.style.cursor = "default"; // Změní kurzor na normální text
+                            li.onclick = null;
+                            li.style.cursor = "default";
                         };
                         typesList.appendChild(li);
                     });
@@ -74,47 +76,74 @@
         }
 
         // Funkce pro odeslání GraphQL mutace
-        async function sendGraphQLMutation(typeId, resultDiv) {
-    const gqlMutation = {
-        query: `
-            mutation GenCode {
-                generatePythonCode(type_: {id: "${typeId}"})
+        async function sendGraphQLMutation(typeId, resultDiv, li) {
+            const gqlMutation = {
+                query: `
+                    mutation GenCode {
+                        generatePythonCode(type_: {id: "${typeId}"})
+                    }
+                `
+            };
+
+            try {
+                const response = await fetch('/gql', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(gqlMutation)
+                });
+
+                const result = await response.json();
+                console.log('Výsledek mutace:', result);
+                const code = result?.data?.generatePythonCode || '# Chyba: Kód nebyl v odpovědi nalezen.';
+
+                const formattedResult = JSON.stringify(result, null, 2)
+                    .replace(/\\n/g, '<br>')
+                    .replace(/\\"/g, '"');
+
+                resultDiv.innerHTML = `Výsledek:<br><pre>${formattedResult}</pre>`;
+
+                // Přidání tlačítka "Download" (zatím bez funkce)
+                const downloadButton = document.createElement('button');
+                downloadButton.textContent = 'Download';
+                downloadButton.onclick = async () => {
+                    try {
+                await fetch('/create_db', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: typeId })
+                });
+                const blob = new Blob([code], { type: 'text/x-python' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `generated_code_${typeId}.py`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            };
+
+
+
+                resultDiv.appendChild(downloadButton);
+
+                resultDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Chyba při volání GraphQL mutace:', error);
+                resultDiv.innerHTML = '<span style="color:red;">Chyba při volání mutace</span>';
+                resultDiv.style.display = 'block';
+                resultDiv.style.background = '#ffebee';
+                resultDiv.style.borderLeft = '4px solid #f44336';
             }
-        `
-    };
+        }
 
-    try {
-        const response = await fetch('/gql', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(gqlMutation)
-        });
-
-        const result = await response.json();
-        console.log('Výsledek mutace:', result);
-
-        // Nahrazení \n za <br> pro správné zalomení
-        const formattedResult = JSON.stringify(result, null, 2)
-    .replace(/\\n/g, '<br>')   // Oprava zalomení řádků
-    .replace(/\\"/g, '"');      // Oprava escapovaných uvozovek
-
-        // Aktualizace a zobrazení výsledku pod typem
-        resultDiv.innerHTML = `Výsledek:<br><pre>${formattedResult}</pre>`;
-        resultDiv.style.display = 'block';
-
-    } catch (error) {
-        console.error('Chyba při volání GraphQL mutace:', error);
-        resultDiv.innerHTML = '<span style="color:red;">Chyba při volání mutace</span>';
-        resultDiv.style.display = 'block';
-        resultDiv.style.background = '#ffebee'; // Červené pozadí při chybě
-        resultDiv.style.borderLeft = '4px solid #f44336';
-    }
-}
-
-        // Načíst data při načtení stránky
         window.onload = loadTypes;
     </script>
 </body>

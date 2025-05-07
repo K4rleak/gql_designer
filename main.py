@@ -135,6 +135,11 @@ async def designer_types(request: Request):
 
     return {"types": types_list}
 
+@app.post("/create_db", response_class=JSONResponse)
+
+
+    return {"types": types_list}
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
