@@ -46,7 +46,7 @@ async def create_db_model(info: strawberry.types.Info,type_id):
         fk = f", ForeignKey('{of_type.name.lower()}s.id')" if of_type.kind == "OBJECT" else ""
         #if nullable:
         #line = f'    {field.name} = Column({column_type}{fk}, nullable=, comment="{field.description}")'
-        line = f'    {field.name} = Column({column_type}{fk}, nullable=, comment="{field.description}")'
+        line = f'    {field.name} = Column({column_type}{fk}, nullable=True, comment="{field.description}")'
         field_lines.append(line)
 
     # Template variables
@@ -54,7 +54,7 @@ async def create_db_model(info: strawberry.types.Info,type_id):
     tablename = type_row.name.lower() + "s"
     description = type_row.description or type_row.name
 
-    return db_model_template.format(
+    model_str= db_model_template.format(
         class_name=class_name,
         tablename=tablename,
         description=description,

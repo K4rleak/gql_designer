@@ -340,3 +340,4 @@ async def createSchema(context):
 
     return schema
     
+#schema = strawberry.Schema(query=Query),https://strawberry.rocks/docs#step-2-define-the-schema

@@ -75,6 +75,10 @@
             }
         }
 
+
+        async function create_db_model(typeId, resultDiv, li) {
+            return "Salamek"
+        }
         // Funkce pro odeslání GraphQL mutace
         async function sendGraphQLMutation(typeId, resultDiv, li) {
             const gqlMutation = {
@@ -109,14 +113,7 @@
                 const downloadButton = document.createElement('button');
                 downloadButton.textContent = 'Download';
                 downloadButton.onclick = async () => {
-                    try {
-                await fetch('/create_db', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ id: typeId })
-                });
+                alert(await create_db_model());
                 const blob = new Blob([code], { type: 'text/x-python' });
                 const url = URL.createObjectURL(blob);
 

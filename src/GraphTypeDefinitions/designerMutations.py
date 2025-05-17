@@ -240,7 +240,7 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
     for field,value in zip(fields,values):
         field.of_type = value
 
-    #db_model_str = await create_db_model(info,type_.id)
+    db_model_str = await create_db_model(info,type_.id)
 
 
 

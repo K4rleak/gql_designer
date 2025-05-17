@@ -135,11 +135,14 @@ async def designer_types(request: Request):
 
     return {"types": types_list}
 
-@app.post("/create_db", response_class=JSONResponse)
+# @app.post("/create_db", response_class=JSONResponse)
 
 
-    return {"types": types_list}
-
+#     return {"types": types_list}
+@app.get("/system", response_class=FileResponse)
+async def graphiql():
+    realpath = os.path.realpath("./graphiql.html")
+    return realpath
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
