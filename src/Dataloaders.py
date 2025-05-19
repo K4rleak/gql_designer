@@ -30,6 +30,7 @@ def createLoaders(asyncSessionMaker):
         cls = DBModel.class_
         attrs[cls.__tablename__] = property(cache(createLambda(asyncSessionMaker, cls)))
         attrs[cls.__name__] = attrs[cls.__tablename__]
+        #print("Loader created ", cls.__tablename__)
     
     # attrs["authorizations"] = property(cache(lambda self: AuthorizationLoader()))
     Loaders = type('Loaders', (), attrs)   
@@ -38,8 +39,8 @@ def createLoaders(asyncSessionMaker):
 def createInfo(asyncSessionMaker):
     class Info:
         @property
-        def context():
-            return createLoaders(asyncSessionMaker)
+        def context(self):
+            return createLoadersContext(asyncSessionMaker)
     return Info()
 
 def getUserFromInfo(info):

@@ -16,13 +16,17 @@ class CodeGenerationInput:
     id: uuid.UUID = strawberry.field(default=None, description="primary key value")
 
 async def create_db_model(info: strawberry.types.Info,type_id):
-    #print("Vytvoreno")
-    
+    print(f"Vytvoreno s id:{type_id}", flush=True)
     context = info.context
+    return await create_db_model_context(context,type_id)
+
+async def create_db_model_context(context,type_id):
+    print(f"Vytvoreno s id:{type_id}", flush=True)
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
 
     type_row = await type_loader.load(type_id)
+    assert type_row is not None, "Nenalezen"
     fields = await field_loader.filter_by(master_type_id=type_id)
     fields = list(fields)
 
