@@ -65,4 +65,5 @@ async def create_db_model_context(context,type_id):
         description=description,
         fields="\n".join(field_lines)
     )
-    print(model_str)
+    return model_str
+    #print(model_str)

@@ -10,7 +10,7 @@ from contextlib import asynccontextmanager
 
 # from src.GraphTypeDefinitions import schema
 from src.DBDefinitions import ComposeConnectionString, startEngine
-from src.GraphTypeDefinitions import createSchema, create_db_model,create_db_model_context
+from src.GraphTypeDefinitions import createSchema, create_db_model,generate_python_code,generate_python_code_
 from src.SchemaLoad import loadSchema
 from src.Dataloaders import createLoadersContext, getLoadersFromContext,createInfo
 
@@ -149,7 +149,11 @@ async def graphiql():
     #getLoadersFromContext
     #loader=getLoadersFromContext(context=context).TypeModel
     #context = createLoadersContext(sessionMaker)
-    await create_db_model(info,UUID("0194a6be-097a-7c48-a240-29b6542a88bf"))
+    type_loader = getLoadersFromContext(context=info.context).TypeModel
+    type_row = await type_loader.load(UUID("0194a6be-097a-7c48-a240-29b6542a88bf"))
+    db_model = await create_db_model(info,UUID("0194a6be-097a-7c48-a240-29b6542a88bf"))
+    qgl_model = await generate_python_code_(info,type_row)
+    print(db_model,qgl_model)
     realpath = os.path.realpath("./graphiql.html")
     return realpath
 

@@ -355,5 +355,136 @@ async def generate_python_code(self, info: strawberry.types.Info, type_: CodeGen
     #print(result)
     return result
 
+##########
+
+async def generate_python_code_(info: strawberry.types.Info, type_: CodeGenerationInput) -> typing.Optional[str]:
+    from .template import model_template
+    context = info.context
+    type_loader = getLoadersFromContext(context=context).TypeModel
+    field_loader = getLoadersFromContext(context=context).FieldModel
+
+    type_row = await type_loader.load(type_.id)
+    fields = await field_loader.filter_by(master_type_id = type_.id)
+    fields = [*fields]
+    type_row.fields = fields
+    futures = (type_loader.load(field.oftype_id) for field in fields)
+    values = await asyncio.gather(*futures)
+    #print(type_row.__tablename__)
+
+    for field,value in zip(fields,values):
+        field.of_type = value
+
+    db_model_str = await create_db_model(info,type_.id)
 
 
+
+
+    lazy_models=[]
+
+    async def recursive(oftype_id,field):
+        type_ = await type_loader.load(oftype_id)
+
+        type_map={
+            "String":"str",
+            "DateTime": "datetime.datetime",
+            "UUID":"IDType",
+            "Boolean":"bool",
+            "Int":"int"
+        }
+
+        innerName = ""
+        if type_.oftype_id:
+            # Recursive call and unpacking the result
+            innerName, _ = await recursive(type_.oftype_id,field)
+        if type_.kind == "SCALAR":
+            #type_name=type(TypeNameResolver(type_)).__name__
+
+            type_name=type_map.get(type_.name, None)
+            
+
+            return f"""typing.Optional[{type_name}]""", ""
+
+        if type_.kind == "OBJECT":
+            lazy_models.append({"name": f"{type_.name}"})
+            return f"""typing.Optional["{type_.name}"]""", f"""resolver=ScalarResolver["{type_.name}"](fkey_field_name="{field.name}_id")"""
+
+        if type_.kind == "LIST":
+            # Use the string innerName instead of the entire tuple
+            ReturnTypeOfList = await type_loader.load(type_.oftype_id)
+            if ReturnTypeOfList.name in type_map:
+                ReturnType = (f"{ReturnTypeOfList.name}") 
+            else: 
+                ReturnType = (f"{ReturnTypeOfList.name}GQLModel")
+            innerName = innerName.replace("typing.Optional[\"", "").replace("\"]", "").replace("typing.Optional[", "").replace("]", "")
+            if innerName in type_map.values():
+                innerName 
+            else: 
+                innerName+="GQLModel"
+            return f"""typing.List["{innerName}"]""", f"""resolver=VectorResolver["{ReturnType}"](fkey_field_name="{field.name}_id", whereType=None)"""
+        #master type mysto toho type.name
+
+        if type_.kind == "NON_NULL":
+            return f"{innerName}", "skibidi"
+        raise Exception("Missing type")
+
+    
+
+    #elementary_types = {"int", "str", "bool", "float", "datetime.datetime", "IDType", "uuid.UUID"}
+    #print(field.of_type.kind)
+    # async def TypeNameFromField(field):
+    #     FieldReturnType = await recursive(field.of_type.id,field)
+    #     TypeNameResolved=TypeNameResolver(FieldReturnType[0])
+    #     if isinstance(TypeNameResolved, str):
+    #         return (TypeNameResolved, FieldReturnType[1])
+    #     else:
+    #         return (type(TypeNameResolved).__name__, FieldReturnType[1])
+
+    
+    field_data = [
+        {
+            "name": field.name,
+            "type": field.of_type.name,
+            "description": field.description,
+            # Unpack the return values from recursive
+            "return_type": (return_type := await recursive(field.of_type.id,field))[0],
+            "resolver": return_type[1],
+            "has_resolver": bool(return_type[1])
+        }
+        for field in fields
+    ]
+
+    # for field in fields:
+    #     result = await recursive(field.of_type.id)  # Await the result
+    #     print(result)
+
+   
+    TypeNameResolved=TypeNameResolver(type_row)
+
+    if isinstance(TypeNameResolved,str):
+        pass
+    else:
+        TypeNameResolved= type(TypeNameResolved).__name__
+    
+    type_data = {
+    "fields": field_data,
+    "type_name": TypeNameResolved,
+    "type_description" : type_row.description,
+    "table_name": type_row.__tablename__,
+    "lazy_models": lazy_models
+}
+    #     type_data = {
+    #         "fields": field_data,
+    #         "type_name": TypeNameResolved,
+    #         "table_name": type_row.__tablename__
+    #     }
+    # else:
+    #     type_data = {
+    #         "fields": field_data,
+    #         "type_name": type(TypeNameResolved).__name__,
+    #         "table_name": type_row.__tablename__
+    #     }
+
+
+    result = chevron.render(model_template, type_data)
+    #print(result)
+    return result
