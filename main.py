@@ -10,9 +10,9 @@ from contextlib import asynccontextmanager
 
 # from src.GraphTypeDefinitions import schema
 from src.DBDefinitions import ComposeConnectionString, startEngine
-from src.GraphTypeDefinitions import createSchema
+from src.GraphTypeDefinitions import createSchema, create_db_model
 from src.SchemaLoad import loadSchema
-from src.Dataloaders import createLoadersContext, getLoadersFromContext
+from src.Dataloaders import createLoadersContext, getLoadersFromContext,createInfo
 
 
 def singleCall(asyncFunc):
@@ -141,6 +141,9 @@ async def designer_types(request: Request):
 #     return {"types": types_list}
 @app.get("/system", response_class=FileResponse)
 async def graphiql():
+    seesionMaker = await RunOnceAndReturnSessionMaker()
+    info=createInfo(seesionMaker)#import dodelat
+    create_db_model(info,"0194a6be-097a-7c48-a240-29b6542a88bf")
     realpath = os.path.realpath("./graphiql.html")
     return realpath
 

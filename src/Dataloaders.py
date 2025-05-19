@@ -35,6 +35,12 @@ def createLoaders(asyncSessionMaker):
     Loaders = type('Loaders', (), attrs)   
     return Loaders()
 
+def createInfo(asyncSessionMaker):
+    class Info:
+        @property
+        def context():
+            return createLoaders(asyncSessionMaker)
+    return Info()
 
 def getUserFromInfo(info):
     context = info.context

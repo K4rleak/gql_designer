@@ -9,6 +9,7 @@
 ###########################################################################################################################
 
 from .creators import createSchema
+from .db_model_creator import create_db_model
 
 # schema = createSchema()
 # schema = strawberry.federation.Schema(query=Query)

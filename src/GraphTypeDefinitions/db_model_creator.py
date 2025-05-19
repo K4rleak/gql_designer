@@ -17,6 +17,7 @@ class CodeGenerationInput:
 
 async def create_db_model(info: strawberry.types.Info,type_id):
     #print("Vytvoreno")
+    
     context = info.context
     type_loader = getLoadersFromContext(context=context).TypeModel
     field_loader = getLoadersFromContext(context=context).FieldModel
